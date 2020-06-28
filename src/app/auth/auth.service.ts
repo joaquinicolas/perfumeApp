@@ -7,7 +7,7 @@ import {delay, tap} from 'rxjs/operators';
 })
 export class AuthService {
   private isLoggedInSubject: BehaviorSubject<boolean>;
-  private isLoggedIn: Observable<boolean>;
+  public isLoggedIn: Observable<boolean>;
   redirectUrl: string;
 
   constructor() {
