@@ -1,19 +1,16 @@
-<div style="padding-top:.9rem;">
-  <div class="card" style="width: 21rem; margin:0 auto;" >
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <div class="fadeIn first">
+      <span style="font-size: 50px;color: grey;padding: 10px;" class="material-icons">account_box</span>
+    </div>
+    <form>
+      <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
+      <input type="password" id="password" class="fadeIn third" name="login" placeholder="password">
+      <input type="submit" class="fadeIn fourth" value="Ingresar" (click)="onLoginClick()">
+    </form>
 
-    <img class="card-img-top"
-         style="margin:0 auto;width:100%;height:200px;"
-         src="https://static.pexels.com/photos/130111/pexels-photo-130111.jpeg"
-         alt="Preserve your moments" />
-
-    <div class="card-block" align="center">
-      <h4 class="card-title">Momentz-4-ever</h4>
-      <p class="card-text">Preserve your life moments in clouds...forever! </p>
-
-      <button class="btn btn-primary"
-              (click)="onLoginClick()">
-        facebook
-      </button>
+    <div id="formFooter">
+      <a class="underlineHover" href="#">Olvide contraseña</a>
     </div>
   </div>
 </div>

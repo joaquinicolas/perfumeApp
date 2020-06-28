@@ -6,8 +6,8 @@ import {AuthService} from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuardGuard implements CanActivate {
-
+export class AuthGuard implements CanActivate {
+  private isLoggedIn = false;
   constructor(private authService: AuthService, private router: Router) {
   }
 
@@ -20,7 +20,8 @@ export class AuthGuardGuard implements CanActivate {
   }
 
   checkAuth(url: string): boolean {
-    if (this.authService.isLoggedIn) {
+    console.log(`Is logged in: ${this.authService.isLoggedInValue}`);
+    if (this.authService.isLoggedInValue) {
       return true;
     }
     this.authService.redirectUrl = url;

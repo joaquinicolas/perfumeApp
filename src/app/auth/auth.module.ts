@@ -5,6 +5,7 @@ import {AuthRoutingModule} from './auth-routing.module';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from './components/register/register.component';
 import {ResetComponent} from './components/reset/reset.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -12,6 +13,7 @@ import {ResetComponent} from './components/reset/reset.component';
   imports: [
     CommonModule,
     AuthRoutingModule,
+    NgbModule
   ],
   exports: [
     LoginComponent, RegisterComponent, ResetComponent

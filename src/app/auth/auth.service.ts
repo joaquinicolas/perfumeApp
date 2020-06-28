@@ -1,25 +1,30 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  isLoggedIn = false;
+  private isLoggedInSubject: BehaviorSubject<boolean>;
+  private isLoggedIn: Observable<boolean>;
   redirectUrl: string;
 
   constructor() {
+    this.isLoggedInSubject = new BehaviorSubject<boolean>(false);
+    this.isLoggedIn = this.isLoggedInSubject.asObservable();
   }
 
-  login(): Observable<boolean> {
-    return of(true).pipe(
-      tap(val => this.isLoggedIn = true),
-      delay(1000)
-    );
+
+  get isLoggedInValue(): boolean {
+    return this.isLoggedInSubject.value;
+  }
+
+  login() {
+    this.isLoggedInSubject.next(true);
   }
 
   logout(): void {
-    this.isLoggedIn = false;
+    this.isLoggedInSubject.next(false);
   }
 }

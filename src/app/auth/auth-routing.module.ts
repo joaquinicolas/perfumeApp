@@ -3,14 +3,14 @@ import {Routes, RouterModule} from '@angular/router';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from './components/register/register.component';
 import {ResetComponent} from './components/reset/reset.component';
-import {AuthGuardGuard} from './auth-guard.guard';
+import {AuthGuard} from './auth-guard.service';
 
 
 const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetComponent,
-    canActivate: [AuthGuardGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',
