@@ -1,0 +1,30 @@
+<div class="container-fluid" style="margin-top: 20px">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Precio</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of perfumes; index as i">
+      <th scope="row">{{i + 1}}</th>
+      <td>
+        {{p.Name}}
+      </td>
+      <td>
+        {{p.Type}}
+      </td>
+      <td>
+        {{p.Price | currency: 'ARS'}}
+      </td>
+      <td>
+        Ver
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
