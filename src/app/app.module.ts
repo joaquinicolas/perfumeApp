@@ -7,12 +7,16 @@ import {AuthModule} from './auth/auth.module';
 import { HeaderComponent } from './header/header.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './home/home.component';
+import { UploadComponent } from './upload/upload.component';
+import { DetailComponent } from './detail/detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    HomeComponent
+    HomeComponent,
+    UploadComponent,
+    DetailComponent
   ],
   imports: [
     BrowserModule,
