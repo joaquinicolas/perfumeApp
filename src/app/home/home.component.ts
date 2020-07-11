@@ -21,6 +21,7 @@ function randomEnum<T>(anEnum: T): T[keyof T] {
 })
 export class HomeComponent implements OnInit {
   perfumes: any[];
+  isCollapsed = false;
 
   constructor() {
     const p = [];
@@ -28,7 +29,8 @@ export class HomeComponent implements OnInit {
       p[i] = {
         Name: `Perfume-${i}`,
         Price: `${Math.random() * (15000 - 500) + 500}`,
-        Type: randomEnum(Type)
+        Type: randomEnum(Type),
+        Show: false,
       };
     }
     this.perfumes = p;

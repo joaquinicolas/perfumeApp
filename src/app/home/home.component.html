@@ -1,30 +1,43 @@
 <div class="container-fluid" style="margin-top: 20px">
-  <table class="table table-striped">
-    <thead>
+  <table class="table table-hover">
+    <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Precio</th>
-        <th scope="col"></th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Precio venta</th>
       </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of perfumes; index as i">
-      <th scope="row">{{i + 1}}</th>
-      <td>
-        {{p.Name}}
-      </td>
-      <td>
-        {{p.Type}}
-      </td>
-      <td>
-        {{p.Price | currency: 'ARS'}}
-      </td>
-      <td>
-        <a routerLinkActive="active" routerLink="/detail">Ver</a>
-      </td>
-    </tr>
+      <div style="display: contents;" *ngFor="let p of perfumes; index as i" (click)="p.Show = !p.Show"
+        [attr.aria-expanded]="!p.Show" aria-controls="details">
+        <tr>
+          <th scope="row">{{i + 1}}</th>
+          <td>
+            {{p.Name}}
+          </td>
+          <td>
+            <span>100%</span>
+          </td>
+          <td>
+            {{p.Price | currency: 'USD'}}
+          </td>
+        </tr>
+        <div [ngbCollapse]="!p.Show" class="container-fluid collapse">
+          <div  class="" *ngFor="let item of [0,1,2,3,4,5,6,7,8]">
+            <th scope="row">item</th>
+            <td>
+              <span>Test1</span>
+            </td>
+            <td>
+              <span>100%</span>
+            </td>
+            <td>
+              <span>10000USD</span>
+            </td>
+          </div>
+        </div>
+      </div>
     </tbody>
   </table>
 </div>

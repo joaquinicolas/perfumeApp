@@ -9,6 +9,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HomeComponent } from './home/home.component';
 import { UploadComponent } from './upload/upload.component';
 import { DetailComponent } from './detail/detail.component';
+import { NgxElectronModule } from 'ngx-electron';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { DetailComponent } from './detail/detail.component';
     AppRoutingModule,
     AuthModule,
     NgbModule,
+    NgxElectronModule,
   ],
   providers: [],
   exports: [
