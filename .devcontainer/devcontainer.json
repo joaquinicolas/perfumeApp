@@ -18,7 +18,13 @@
 		"eg2.vscode-npm-script",
 		"tabnine.tabnine-vscode",
 		"ms-vscode.vscode-typescript-tslint-plugin",
-		"msjsdiag.debugger-for-chrome"
+		"msjsdiag.debugger-for-chrome",
+		"johnpapa.angular2",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"eg2.vscode-npm-script",
+		"christian-kohler.path-intellisense",
+		"zignd.html-css-class-completion"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
