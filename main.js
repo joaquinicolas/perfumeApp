@@ -9,7 +9,9 @@ function createWindow() {
     width: 600,
     height: 600,
     backgroundColor: '#ffffff',
-
+    webPreferences: {
+      nodeIntegration: true
+    },
   })
 
   win.loadURL(url.format({
@@ -23,6 +25,7 @@ function createWindow() {
   win.on('closed', () => {
     win = null
   });
+
 }
 
 
