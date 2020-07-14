@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { ExcelService } from "../excel.service";
 
 enum Type {
   Perfume = 'Perfume',
@@ -23,7 +24,7 @@ export class HomeComponent implements OnInit {
   perfumes: any[];
   isCollapsed = false;
 
-  constructor() {
+  constructor(private excelService: ExcelService) {
     const p = [];
     for (let i = 0; i < 50; i++) {
       p[i] = {
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.excelService.readData();
   }
 
 }
