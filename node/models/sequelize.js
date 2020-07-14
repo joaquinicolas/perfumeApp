@@ -1,12 +1,12 @@
 const { DataTypes, Model } = require('sequelize');
-import { Sequelize } from "sequelize";
-export const sequelize = new Sequelize({
+const { Sequelize } = require('sequelize');
+const sequelize = new Sequelize({
   define: { timestamps: false },
   storage: './db.sqlite',
   dialect: 'sqlite'
 });
 
-export function checkConnection() {
+module.exports.checkConnection = function () {
   return sequelize
     .authenticate()
     .then(() => {
@@ -19,7 +19,7 @@ export function checkConnection() {
     });
 }
 
-export const Commodity = sequelize.define('Commodity', {
+module.exports.Commodity = sequelize.define('Commodity', {
   Description: {
     type: DataTypes.STRING,
     allowNull: false
@@ -40,7 +40,7 @@ export const Commodity = sequelize.define('Commodity', {
   modelName: 'Commodity'
 });
 
-export const Fragancia = sequelize.define('Fragancia', {
+module.exports.Fragancia = sequelize.define('Fragancia', {
   Description: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -60,23 +60,24 @@ export const Fragancia = sequelize.define('Fragancia', {
   modelName: 'Fragancia'
 });
 
-export const FraganciaCommodity = sequelize.define('FraganciaCommodity', {
-  ID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true
-  },
+module.exports.FraganciaCommodity = sequelize.define('FraganciaCommodity', {
   Quantity: {
     type: DataTypes.FLOAT,
     allowNull: false,
-    defaultValue: 0.0,
+    defaultValue: 0.0
+  },
+  Fragancia_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  Commodity_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
+}, {
+  sequelize,
+  modelName: 'FraganciaCommodity'
 });
 
-Commodity.belongsToMany(Fragancia, { through: FraganciaCommodity });
-Fragancia.belongsToMany(Commodity, { through: FraganciaCommodity });
-FraganciaCommodity.belongsTo(Fragancia);
-FraganciaCommodity.belongsTo(Commodity);
-Fragancia.hasMany(FraganciaCommodity);
-Commodity.hasMany(FraganciaCommodity);
+//this.Commodity.belongsToMany(this.Fragancia, { through: this.FraganciaCommodity, foreignKey: 'commodity_id', sourceKey: 'id' });
+//this.Fragancia.belongsToMany(this.Commodity, { through: this.FraganciaCommodity, foreignKey: 'fragancia_id', sourceKey: 'id' });

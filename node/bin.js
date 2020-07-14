@@ -1,10 +1,28 @@
-const { readData } = require('.').Excel;
+const { readData, readCommodities } = require('.').Excel;
 const { save, createCommodity } = require('.').DB;
-import { checkConnection } from "./models/sequelize";
+const { checkConnection } = require('./models/sequelize');
 const insertCommodities = true,
-    insertFragancias = false;
+    insertFragancias = true;
 
 checkConnection()
+    .then(() => {
+        if (insertCommodities) {
+            return readCommodities();
+        }
+        return Promise.resolve([]);
+    })
+    .then(cs => {
+        if (cs.length > 0) {
+            const ops = cs.map(val => createCommodity(val));
+            return Promise
+                .all(ops)
+                .then(() => {
+                    return Promise.resolve();
+                });
+        }
+        return Promise.resolve();
+
+    })
     .then(() => {
         if (insertFragancias) {
             return readData();
@@ -12,22 +30,18 @@ checkConnection()
         return Promise.resolve([]);
     })
     .then((fragancias) => {
-        const ops = fragancias.map(value => save(value));
-        return Promise
-            .all(ops)
-            .then(() => console.log('All fragancias operations completed.'))
+        if (fragancias.length > 0) {
+            const ops = fragancias.map(value => save(value));
+            return Promise
+                .all(ops)
+                .then(() => {
+                    return Promise.resolve();
+                })
+        }
+        return Promise.resolve();
     })
     .then(() => {
-        if (insertCommodities) {
-            // TODO: read commodities.
-        }
-        return Promise.resolve([]);
-    })
-    .then(cs => {
-        const ops = cs.map(val => createCommodity(val));
-        return Promise
-            .all(ops)
-            .then(() => console.log('All commodities operations completed.'));
+        console.log("Operations completed.");
     })
     .catch(reason => {
         console.error('Unable to connect to database: ', reason);

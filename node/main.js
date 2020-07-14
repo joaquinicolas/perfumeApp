@@ -1,7 +1,7 @@
 //import { Workbook } from 'exceljs'
 const ExcelJS = require('exceljs');
 const path = require('path');
-const { Fragancia, Commodity } = require('./models/sequelize');
+const { Fragancia, Commodity, FraganciaCommodity } = require('./models/sequelize');
 
 const fraganciasFile = '/fragancias.xlsx',
     commoditiesFile = '/primas.xlsx';
@@ -35,21 +35,20 @@ module.exports.Excel = {
         return workbook.xlsx.readFile(path.join(__dirname, fraganciasFile))
             .then((wb) => {
                 wb.eachSheet((sheet, id) => {
-                    const name = sheet.getCell("F2").value.toString();
-                    const price = +sheet.getCell("G2").result.toString();
-                    const cost = +sheet.getCell("H2").result.toString();
-                    const ID = +sheet.getCell("I2").value.toString();
+                    const name = sheet.getCell("F2").result ? sheet.getCell("F2").result.toString() : sheet.getCell("F2").value.toString();
+                    const price = +sheet.getCell("G2").result ? sheet.getCell("G2").result.toString() : sheet.getCell("G2").value.toString();
+                    const cost = +sheet.getCell("H2").result ? sheet.getCell("H2").result.toString() : sheet.getCell('H2').value.toString();
                     let components = [];
                     sheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
                         if (rowNumber == 1) {
                             return
                         }
                         components.push({
-                            Quantity: +row.getCell("C").value.toString(),
+                            Quantity: +row.getCell("C").result ? +row.getCell('C').result.toString() : +row.getCell('C').value.toString(),
                             Component: {
-                                id: +row.getCell("A").value.toString(),
+                                id: +row.getCell("A").result ? +row.getCell('A').result.toString() : +row.getCell('A').value.toString(),
                                 Description: row.getCell("B").value.toString(),
-                                Cost: +row.getCell("E").result.toString(),
+                                Cost: +row.getCell("E").result ? +row.getCell("E").result.toString() : +row.getCell('E').value.toString(),
                             },
                         });
                     });
@@ -59,7 +58,6 @@ module.exports.Excel = {
                         Description: name,
                         Price: price,
                         Cost: cost,
-                        id: ID
                     });
                 });
                 return fragancias;
@@ -67,10 +65,10 @@ module.exports.Excel = {
     },
     /** 
      * Read commodities excel
-     * @return {Promise<Commodity>[]}
+     * @return {Promise<Commodity[]>}
     */
     readCommodities: () => {
-        const commodities = [];
+        let commodities = [];
         let workbook = new ExcelJS.Workbook();
         return workbook.xlsx.readFile(path.join(__dirname, commoditiesFile))
             .then(wb => {
@@ -80,12 +78,13 @@ module.exports.Excel = {
                             return
                         }
                         commodities.push({
-                            id: +row.getCell('A').result.toString(),
+                            id: +row.getCell('A').result ? +row.getCell('A').result : +row.getCell('A').value,
                             Description: row.getCell('B').value.toString(),
-                            Cost: +row.getCell("C").value.toString()
+                            Cost: +row.getCell("C").result ? +row.getCell("C").result : +row.getCell("C").value
                         });
                     });
                 });
+                return Promise.resolve(commodities);
             });
     },
 };
@@ -98,20 +97,21 @@ module.exports.DB = {
     */
     save: (fragancia) => {
         return Fragancia
-            .findByPk(fragancia.ID)
+            .create(fragancia)
             .then(f => {
-                if (!f) {
-                    return Fragancia
-                        .create(fragancia)
-                        .then(f => {
-                            fragancia.Components.forEach((value) => {
-                                f.addCommodity([value.Component]);
-                            })
-                            console.log('Fragancia saved successfully: ', f.toJSON());
-                            return true
-                        });
+                return fragancia.Components.map((value) => {
+                    FraganciaCommodity.create({
+                        Quantity: value.Quantity,
+                        Fragancia_id: f.get('id'),
+                        Commodity_id: value.Component.id
+                    });
                 }
+                );
             })
+            .then(() => {
+                console.log('Fragancia saved successfully.');
+                return Promise.resolve();
+            });
     },
     /**
      * create a commodity
