@@ -1,15 +1,15 @@
 {
   "name": "fragancias",
   "version": "0.0.0",
-  "main": "main.js",
+  "main": "electron_app/dist/main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href ./",
+    "build": "ng build --base-href ./ && tsc --p electron_app",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "start:electron": "ng build --base-href ./ && electron . --remote-debugging-port=9223"
+    "start:electron": "electron electron_app/dist/main.js --remote-debugging-port=9223"
   },
   "private": true,
   "dependencies": {
@@ -27,8 +27,11 @@
     "exceljs": "^4.1.0",
     "ngx-electron": "^2.2.0",
     "read-excel-file": "^4.0.6",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.4",
+    "sqlite3": "^5.0.0",
     "tslib": "^1.10.0",
+    "typeorm": "^0.2.25",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

@@ -1,18 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ExcelService } from "../excel.service";
 
-enum Type {
-  Perfume = 'Perfume',
-  EdP = 'Eau de Perfume',
-  EdT = 'Eau de Toillete',
-  EdC = 'Eau de cologne',
-  EdS = 'Splash perfumes'
-}
-
-function randomEnum<T>(anEnum: T): T[keyof T] {
-  const enumValues = (Object.values(anEnum) as unknown) as T[keyof T][];
-  const randomIndex = Math.floor(Math.random() * enumValues.length);
-  return enumValues[randomIndex];
+export interface Fragancia {
+  id: number;
+  Description: string;
+  Cost: number;
+  Price: number;
 }
 
 @Component({
@@ -21,24 +14,16 @@ function randomEnum<T>(anEnum: T): T[keyof T] {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  perfumes: any[];
-  isCollapsed = false;
+  perfumes: Fragancia[];
 
-  constructor(private excelService: ExcelService) {
-    const p = [];
-    for (let i = 0; i < 50; i++) {
-      p[i] = {
-        Name: `Perfume-${i}`,
-        Price: `${Math.random() * (15000 - 500) + 500}`,
-        Type: randomEnum(Type),
-        Show: false,
-      };
-    }
-    this.perfumes = p;
-  }
+  constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.excelService.readData();
+    this.excelService.gotFragancias.subscribe(values => {
+      this.perfumes = values;
+      this.cdr.detectChanges();
+    });
   }
 
 }

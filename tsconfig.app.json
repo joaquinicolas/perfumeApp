@@ -8,6 +8,9 @@
     "src/main.ts",
     "src/polyfills.ts"
   ],
+  "exclude": [
+    "electron/**/*"
+  ],
   "include": [
     "src/**/*.d.ts"
   ]
