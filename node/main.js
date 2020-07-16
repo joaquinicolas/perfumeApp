@@ -12,11 +12,11 @@ const fraganciasFile = '/fragancias.xlsx',
  * @property {number} Cost how much the fragancia cost
  * @property {number} Price how much the fragancia is
  * @property {Component[]} Components how the fragancia is composed
- * 
+ *
  * @typedef {Object} Component
  * @property {Commodity} Component
  * @property {number} Quantity
- * 
+ *
  * @typedef {Object} Commodity
  * @property {number} id identifies a component
  * @property {string} Description how a component is called
@@ -63,7 +63,7 @@ module.exports.Excel = {
                 return fragancias;
             })
     },
-    /** 
+    /**
      * Read commodities excel
      * @return {Promise<Commodity[]>}
     */
@@ -102,8 +102,8 @@ module.exports.DB = {
                 return fragancia.Components.map((value) => {
                     FraganciaCommodity.create({
                         Quantity: value.Quantity,
-                        Fragancia_id: f.get('id'),
-                        Commodity_id: value.Component.id
+                        fraganciaId: f.get('id'),
+                        commodityId: value.Component.id
                     });
                 }
                 );

@@ -66,11 +66,11 @@ module.exports.FraganciaCommodity = sequelize.define('FraganciaCommodity', {
     allowNull: false,
     defaultValue: 0.0
   },
-  Fragancia_id: {
+  fraganciaId: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  Commodity_id: {
+  commodityId: {
     type: DataTypes.INTEGER,
     allowNull: false
   }
