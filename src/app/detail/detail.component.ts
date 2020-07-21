@@ -1,4 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ExcelService} from '../excel.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+
+export interface Commodity {
+  id: number;
+  Description: string;
+  Cost: number;
+}
 
 @Component({
   selector: 'app-detail',
@@ -6,18 +14,33 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./detail.component.css']
 })
 export class DetailComponent implements OnInit {
-  components: any[];
-  constructor() {
-    const c = [];
-    for (let i = 0; i < 50; i++) {
-      c[i] = {
-        Name: `Component-${i}`,
-        Price: `${Math.random() * (15000 - 500) + 500}`,
-        Quantity: `${Math.random() * (100 - 10) + 10}`
-      };
-    }
-    this.components = c;
+  commodities: Commodity[];
+  commodity: Commodity;
+  // trigger opens up modal
+  @ViewChild('trigger') trigger: ElementRef;
+
+  constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.excelService.readCommodities();
+    this.excelService.gotCommodities.subscribe(values => {
+      this.commodities = values;
+      this.cdr.detectChanges();
+    });
+  }
+
+  open(content) {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'xl'});
+  }
+
+  close(content) {
+    this.modalService.dismissAll('Save changes');
+    this.excelService.saveCommodity(this.commodity);
+  }
+
+  viewCommodity(c: Commodity) {
+    this.commodity = c;
+    this.trigger.nativeElement.click();
+  }
 }
