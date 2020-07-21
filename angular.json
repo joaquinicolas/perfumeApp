@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "fragancias"
+  "defaultProject": "fragancias",
+  "cli": {
+    "analytics": "d69fd4fd-4e40-4640-a78d-81e58d29837d"
+  }
 }

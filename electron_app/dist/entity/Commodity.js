@@ -22,7 +22,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Array)
 ], Commodity.prototype, "commodityFragancias", void 0);
 Commodity = tslib_1.__decorate([
-    typeorm_1.Entity({ synchronize: false })
+    typeorm_1.Entity({ synchronize: false, name: 'Commodities' })
 ], Commodity);
 exports.Commodity = Commodity;
 //# sourceMappingURL=Commodity.js.map

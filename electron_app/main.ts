@@ -1,12 +1,12 @@
-import "reflect-metadata";
-import { app, BrowserWindow, ipcMain } from "electron";
-import * as url from "url";
-import * as path from "path";
-import { createConnection } from "typeorm";
-import { API } from "./api";
-import { Fragancia } from './entity/Fragancia';
-import { FraganciaCommodity } from './entity/FraganciaCommodity';
-import { Commodity } from './entity/Commodity';
+import 'reflect-metadata';
+import {app, BrowserWindow, ipcMain} from 'electron';
+import * as url from 'url';
+import * as path from 'path';
+import {Connection, createConnection} from 'typeorm';
+import {API} from './api';
+import {Fragancia} from './entity/Fragancia';
+import {FraganciaCommodity} from './entity/FraganciaCommodity';
+import {Commodity} from './entity/Commodity';
 
 let win: BrowserWindow;
 
@@ -18,7 +18,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true
     },
-  })
+  });
 
   win.loadURL(url.format({
     pathname: path.resolve(__dirname, '../../dist/index.html'),
@@ -29,7 +29,7 @@ function createWindow() {
   win.webContents.openDevTools();
 
   win.on('closed', () => {
-    win = null
+    win = null;
   });
 }
 
@@ -43,7 +43,7 @@ app.on('activate', () => {
   if (win === null) {
     createWindow();
   }
-})
+});
 
 ipcMain.on('getFragancias', () => {
   return DB.init()
@@ -54,19 +54,40 @@ ipcMain.on('getFragancias', () => {
     .catch(err => console.error(err));
 });
 
-const DB = {
-  init: () => {
-    return createConnection({
-      type: "sqlite",
-      database: path.resolve(__dirname, '../../db.sqlite'),
-      synchronize: true,
-      logging: false,
-      entities: [
-        Fragancia,
-        FraganciaCommodity,
-        Commodity
-      ],
-
+ipcMain.on('saveChanges', (event, args) => {
+  return DB.init()
+    .then(connection => API.saveChanges(connection, args))
+    .then(f => {
+      win.webContents.send('saveChanges', f);
+    })
+    .catch(err => {
+      console.log(err);
+      win.webContents.send('saveChanges', err);
     });
+});
+
+const DB = {
+  connection: null,
+  init: (): Promise<Connection> => {
+    let result = Promise.resolve(this.connection);
+    if (!this.connection) {
+      result = createConnection({
+        type: 'sqlite',
+        database: path.resolve(__dirname, '../../db.sqlite'),
+        synchronize: true,
+        logging: false,
+        entities: [
+          Fragancia,
+          FraganciaCommodity,
+          Commodity
+        ],
+      })
+        .then(connection => {
+          this.connection = connection;
+          return Promise.resolve(connection);
+        });
+    }
+
+    return result;
   },
 };

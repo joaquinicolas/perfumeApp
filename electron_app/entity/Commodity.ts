@@ -1,7 +1,7 @@
 import { PrimaryColumn, Column, OneToMany, Entity,  } from 'typeorm';
 import { FraganciaCommodity } from './FraganciaCommodity';
 
-@Entity({ synchronize: false })
+@Entity({ synchronize: false, name: 'Commodities' })
 export class Commodity {
 
     @PrimaryColumn()

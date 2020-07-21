@@ -1,7 +1,7 @@
-import { Injectable, Component } from '@angular/core';
-import { remote, ipcRenderer } from "electron";
-import { Fragancia } from './home/home.component';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {Injectable, Component} from '@angular/core';
+import {remote, ipcRenderer} from 'electron';
+import {Fragancia} from './home/home.component';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 
 @Injectable({
@@ -20,13 +20,36 @@ export class ExcelService {
     ipcRenderer.on('getFragancias', (event, f) => {
       this.fraganciasSubject.next(f);
     });
+
+    ipcRenderer.on('saveChanges', (event, args) => {
+      if (args instanceof Error) {
+        // Gets an error
+        // TODO: show a modal
+        console.error(args);
+      } else {
+        const fragancia = <Fragancia> args;
+        this.fraganciasSubject.next(
+          this.fraganciasSubject.value.map(value => value.id === fragancia.id ? fragancia : value)
+        );
+      }
+      console.log('Changes saved successfully');
+    });
+  }
+
+  private findFragancia(id: number): Fragancia {
+    return this.fraganciasSubject.value.find(value => value.id === id);
   }
 
   get gotFraganciasValue() {
     return this.fraganciasSubject.value;
   }
+
   readData() {
     ipcRenderer.send('getFragancias', {});
+  }
+
+  saveChanges(fragancia: Fragancia) {
+    ipcRenderer.send('saveChanges', fragancia);
   }
 }
 

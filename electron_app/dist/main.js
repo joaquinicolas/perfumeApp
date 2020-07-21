@@ -48,19 +48,39 @@ electron_1.ipcMain.on('getFragancias', () => {
     })
         .catch(err => console.error(err));
 });
+electron_1.ipcMain.on('saveChanges', (event, args) => {
+    return DB.init()
+        .then(connection => api_1.API.saveChanges(connection, args))
+        .then(f => {
+        win.webContents.send('saveChanges', f);
+    })
+        .catch(err => {
+        console.log(err);
+        win.webContents.send('saveChanges', err);
+    });
+});
 const DB = {
+    connection: null,
     init: () => {
-        return typeorm_1.createConnection({
-            type: "sqlite",
-            database: path.resolve(__dirname, '../../db.sqlite'),
-            synchronize: true,
-            logging: false,
-            entities: [
-                Fragancia_1.Fragancia,
-                FraganciaCommodity_1.FraganciaCommodity,
-                Commodity_1.Commodity
-            ],
-        });
+        let result = Promise.resolve(this.connection);
+        if (!this.connection) {
+            result = typeorm_1.createConnection({
+                type: 'sqlite',
+                database: path.resolve(__dirname, '../../db.sqlite'),
+                synchronize: true,
+                logging: false,
+                entities: [
+                    Fragancia_1.Fragancia,
+                    FraganciaCommodity_1.FraganciaCommodity,
+                    Commodity_1.Commodity
+                ],
+            })
+                .then(connection => {
+                this.connection = connection;
+                return Promise.resolve(connection);
+            });
+        }
+        return result;
     },
 };
 //# sourceMappingURL=main.js.map

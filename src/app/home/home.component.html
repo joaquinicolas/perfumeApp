@@ -1,28 +1,70 @@
 <div class="container-fluid" style="margin-top: 20px">
   <table class="table table-hover">
     <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Porcentaje</th>
-        <th scope="col">Precio venta</th>
-      </tr>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Porcentaje</th>
+      <th scope="col">Precio</th>
+    </tr>
     </thead>
     <tbody>
-      <div style="display: contents;" *ngFor="let p of perfumes; index as i">
-        <tr>
-          <th scope="row">{{i + 1}}</th>
-          <td>
-            {{p.Description}}
-          </td>
-          <td>
-            <span>100%</span>
-          </td>
-          <td>
-            {{p.Price | currency: 'USD'}}
-          </td>
-        </tr>
-      </div>
+    <tr *ngFor="let p of perfumes; index as i" (click)="viewFragancia(p)">
+      <th scope="row">{{i + 1}}</th>
+      <td>
+        {{p.Description}}
+      </td>
+      <td>
+        <span>100%</span>
+      </td>
+      <td>
+        {{p.Price | currency: 'USD'}}
+      </td>
+    </tr>
     </tbody>
   </table>
 </div>
+
+<button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary" (click)="open(content)">
+  Launch demo modal
+</button>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{fragancia.Description}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+   <table class="table table-borderless">
+     <thead>
+     <tr>
+       <th scope="col">Nombre</th>
+       <th scope="col">Costo unitario</th>
+       <th scope="col">Cantidad</th>
+       <th scope="col">Costo Total</th>
+     </tr>
+     </thead>
+     <tbody>
+     <tr *ngFor="let c of fragancia.Components">
+       <td>
+         {{c.Description}}
+       </td>
+       <td>
+         {{c.CostByUnit}}
+       </td>
+       <td>
+         <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
+       </td>
+       <td>
+         {{c.Quantity * c.CostByUnit}}
+       </td>
+     </tr>
+     </tbody>
+   </table>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="close(content)">Save</button>
+  </div>
+</ng-template>
