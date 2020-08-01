@@ -11,6 +11,7 @@ import { UploadComponent } from './upload/upload.component';
 import { DetailComponent } from './detail/detail.component';
 import { NgxElectronModule } from 'ngx-electron';
 import { FormsModule } from '@angular/forms';
+import { MoneyPipe } from './money.pipe';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     HeaderComponent,
     HomeComponent,
     UploadComponent,
-    DetailComponent
+    DetailComponent,
+    MoneyPipe
   ],
   imports: [
     BrowserModule,

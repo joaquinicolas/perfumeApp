@@ -8,6 +8,7 @@ export interface Fragancia {
   Cost: number;
   Price: number;
   Components: Commodity[];
+  totalQuantity: number;
 }
 
 interface Commodity {

@@ -5,6 +5,7 @@
       <th scope="col">#</th>
       <th scope="col">Nombre</th>
       <th scope="col">Porcentaje</th>
+      <th scope="col">Costo</th>
       <th scope="col">Precio</th>
     </tr>
     </thead>
@@ -15,10 +16,13 @@
         {{p.Description}}
       </td>
       <td>
-        <span>100%</span>
+        {{p.totalQuantity * 100 | number: '1.2-2'}}
       </td>
       <td>
-        {{p.Price | currency: 'USD'}}
+        {{p.Cost | money}}
+      </td>
+      <td>
+        {{p.Price | money}}
       </td>
     </tr>
     </tbody>
@@ -37,32 +41,32 @@
     </button>
   </div>
   <div class="modal-body">
-   <table class="table table-borderless">
-     <thead>
-     <tr>
-       <th scope="col">Nombre</th>
-       <th scope="col">Costo unitario</th>
-       <th scope="col">Cantidad</th>
-       <th scope="col">Costo Total</th>
-     </tr>
-     </thead>
-     <tbody>
-     <tr *ngFor="let c of fragancia.Components">
-       <td>
-         {{c.Description}}
-       </td>
-       <td>
-         {{c.CostByUnit}}
-       </td>
-       <td>
-         <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
-       </td>
-       <td>
-         {{c.Quantity * c.CostByUnit}}
-       </td>
-     </tr>
-     </tbody>
-   </table>
+    <table class="table table-borderless">
+      <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Costo unitario</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Costo Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let c of fragancia.Components">
+        <td>
+          {{c.Description}}
+        </td>
+        <td>
+          {{c.CostByUnit | money}}
+        </td>
+        <td>
+          <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
+        </td>
+        <td>
+          {{c.Quantity * c.CostByUnit | money }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="close(content)">Save</button>
