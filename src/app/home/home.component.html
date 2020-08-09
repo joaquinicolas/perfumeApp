@@ -7,10 +7,12 @@
       <th scope="col">Porcentaje</th>
       <th scope="col">Costo</th>
       <th scope="col">Precio</th>
+      <th></th>
+      <th></th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of perfumes; index as i" (click)="viewFragancia(p)">
+    <tr *ngFor="let p of perfumes; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
       <th scope="row">{{i + 1}}</th>
       <td>
         {{p.Description}}
@@ -23,6 +25,14 @@
       </td>
       <td>
         {{p.Price | money}}
+      </td>
+      <td>
+        <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
+              (click)="toggleFraganciaPopup($event,p, 1)">print</span>
+      </td>
+      <td>
+        <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
+              (click)="toggleFraganciaPopup($event, p, 2)">forward</span>
       </td>
     </tr>
     </tbody>
@@ -70,5 +80,42 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="close(content)">Save</button>
+  </div>
+</ng-template>
+
+<button style="visibility: hidden" id="print_btn" #print_btn class="btn btn-lg btn-outline-primary"
+        (click)="open(print)">
+  Launch demo modal
+</button>
+
+<ng-template #print let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{fragancia.Description}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table class="table table-borderless">
+      <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Cantidad</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let c of fragancia.Components">
+        <td>
+          {{c.Description}}
+        </td>
+        <td>
+          <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="close(print)">Imprimir</button>
   </div>
 </ng-template>

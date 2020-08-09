@@ -20,6 +20,12 @@ interface Commodity {
   JoinTableId: number;
 }
 
+enum Actions {
+  DisplayFragancia = 0,
+  PrintFragancia = 1,
+  ExportFragancia = 2
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -28,8 +34,10 @@ interface Commodity {
 export class HomeComponent implements OnInit {
   perfumes: Fragancia[];
   fragancia: Fragancia;
+  action: Actions;
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
+  @ViewChild('print_btn') printBtn: ElementRef;
 
   constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
   }
@@ -49,11 +57,32 @@ export class HomeComponent implements OnInit {
 
   close(content) {
     this.modalService.dismissAll('Save changes');
-    this.excelService.saveChanges(this.fragancia);
+    switch (this.action) {
+      case Actions.DisplayFragancia:
+        this.excelService.saveChanges(this.fragancia);
+        break;
+      case Actions.PrintFragancia:
+        console.log('Printing...');
+        break;
+      case Actions.ExportFragancia:
+        console.log('Exporting...');
+        break;
+    }
   }
 
-  viewFragancia(p: Fragancia) {
+  toggleFraganciaPopup(event: any, p: Fragancia, action: Actions) {
+    event.stopPropagation();
     this.fragancia = p;
-    this.trigger.nativeElement.click();
+    this.action = action;
+    switch (action) {
+      case Actions.DisplayFragancia:
+        this.trigger.nativeElement.click();
+        break;
+      case Actions.PrintFragancia:
+        this.printBtn.nativeElement.click();
+        break;
+      case Actions.ExportFragancia:
+        break;
+    }
   }
 }
