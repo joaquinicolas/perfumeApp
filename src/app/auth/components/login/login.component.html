@@ -4,13 +4,15 @@
       <span style="font-size: 50px;color: grey;padding: 10px;" class="material-icons">account_box</span>
     </div>
     <form>
-      <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
-      <input type="password" id="password" class="fadeIn third" name="login" placeholder="password">
+      <input [(ngModel)]="user" type="text" id="login" class="fadeIn second" name="login" placeholder="login">
+      <input [(ngModel)]="passwd" type="password" id="password" class="fadeIn third" name="login"
+             placeholder="password">
       <input type="submit" class="fadeIn fourth" value="Ingresar" (click)="onLoginClick()">
     </form>
 
     <div id="formFooter">
-      <a class="underlineHover" href="#">Olvide contraseña</a>
+      {{msg}}
+      <!--      <a class="underlineHover" href="#">Olvide contraseña</a>-->
     </div>
   </div>
 </div>

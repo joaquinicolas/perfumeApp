@@ -20,8 +20,12 @@ export class AuthService {
     return this.isLoggedInSubject.value;
   }
 
-  login() {
-    this.isLoggedInSubject.next(true);
+  login(usr: string, passwd: string) {
+    if (usr === 'marcos' && passwd === '20m4Rc0S20') {
+      this.isLoggedInSubject.next(true);
+      return;
+    }
+    this.isLoggedInSubject.next(false);
   }
 
   logout(): void {

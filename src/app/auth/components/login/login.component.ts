@@ -8,6 +8,10 @@ import {Router} from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  user: string;
+  passwd: string;
+  msg: string;
+
   constructor(private authService: AuthService, private router: Router) {
   }
 
@@ -15,7 +19,10 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginClick() {
-    this.authService.login();
+    this.authService.login(this.user, this.passwd);
+    if (!this.authService.isLoggedInValue) {
+      this.msg = 'Credenciales erroneas';
+    }
     if (this.authService.redirectUrl) {
       this.router.navigate([this.authService.redirectUrl]);
     } else {
