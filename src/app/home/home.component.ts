@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
+  @ViewChild('export_btn') exportBtn: ElementRef;
 
   constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
   }
@@ -51,8 +52,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  open(content) {
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'xl'});
+  open(content, size: string = 'xl') {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: size});
   }
 
   close(content) {
@@ -82,6 +83,7 @@ export class HomeComponent implements OnInit {
         this.printBtn.nativeElement.click();
         break;
       case Actions.ExportFragancia:
+        this.exportBtn.nativeElement.click();
         break;
     }
   }
