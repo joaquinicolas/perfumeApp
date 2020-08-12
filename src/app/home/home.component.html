@@ -1,3 +1,10 @@
+<div class="d-flex justify-content-center">
+  <form>
+    <div class="form-group form-inline">
+      Buscar: <input class="form-control ml-2" type="text" [formControl]="filter"/>
+    </div>
+  </form>
+</div>
 <div class="container-fluid doNotPrint" style="margin-top: 20px">
   <table class="table table-hover">
     <thead class="thead-dark">
@@ -12,19 +19,19 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of perfumes; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
+    <tr *ngFor="let p of perfumes$ | async; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
       <th scope="row">{{i + 1}}</th>
       <td>
-        {{p.Description}}
+        <ngb-highlight [result]="p.Description" [term]="filter.value"></ngb-highlight>
       </td>
       <td>
-        {{p.totalQuantity * 100 | number: '1.2-2'}}
+        <ngb-highlight [result]="p.totalQuantity * 100 | number: '1.2-2'" [term]="filter.value"></ngb-highlight>
       </td>
       <td>
-        {{p.Cost | number : '1.2-2'}}
+        <ngb-highlight [result]="p.Cost | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
       </td>
       <td>
-        {{p.Price | number : '1.2-2'}}
+        <ngb-highlight [result]="p.Price | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
       </td>
       <td>
           <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"

@@ -10,7 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { UploadComponent } from './upload/upload.component';
 import { DetailComponent } from './detail/detail.component';
 import { NgxElectronModule } from 'ngx-electron';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MoneyPipe } from './money.pipe';
 import { VowelsPipe } from './vowels.pipe';
 
@@ -24,14 +24,15 @@ import { VowelsPipe } from './vowels.pipe';
     MoneyPipe,
     VowelsPipe
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    AuthModule,
-    NgbModule,
-    NgxElectronModule,
-    FormsModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        AuthModule,
+        NgbModule,
+        NgxElectronModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
   providers: [],
   exports: [
     HeaderComponent
