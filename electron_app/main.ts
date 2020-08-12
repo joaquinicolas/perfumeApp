@@ -2,11 +2,18 @@ import 'reflect-metadata';
 import {app, BrowserWindow, ipcMain} from 'electron';
 import * as url from 'url';
 import * as path from 'path';
-import {Connection, createConnection} from 'typeorm';
+import {Connection, createConnection, getConnection, getConnectionManager} from 'typeorm';
 import {API} from './api';
 import {Fragancia} from './entity/Fragancia';
 import {FraganciaCommodity} from './entity/FraganciaCommodity';
 import {Commodity} from './entity/Commodity';
+
+enum AppEvents {
+  ReadCommodities = 'getCommodities',
+  SaveCommodities = 'saveCommodities',
+  ReadFragancias = 'getFragancias',
+  SaveFragancias = 'saveChanges',
+}
 
 let win: BrowserWindow;
 
@@ -56,7 +63,7 @@ ipcMain.on('getFragancias', () => {
 
 ipcMain.on('saveChanges', (event, args) => {
   return DB.init()
-    .then(connection => API.saveChanges(connection, args))
+    .then(connection => API.saveChanges(args))
     .then(f => {
       win.webContents.send('saveChanges', f);
     })
@@ -66,11 +73,32 @@ ipcMain.on('saveChanges', (event, args) => {
     });
 });
 
+ipcMain.on(AppEvents.ReadCommodities, async (event, args) => {
+  const conn = await DB.init();
+  try {
+    const commodities = await API.getCommodities(conn);
+    win.webContents.send(AppEvents.ReadCommodities, commodities);
+  } catch (e) {
+    console.log(e);
+    win.webContents.send(AppEvents.ReadCommodities, e);
+  }
+});
+
+ipcMain.on(AppEvents.SaveCommodities, async (event, args) => {
+  await DB.init();
+  try {
+    const commodity = await API.saveCommodity(args);
+    win.webContents.send(AppEvents.SaveCommodities, commodity);
+  } catch (e) {
+    console.log(e);
+    win.webContents.send(AppEvents.SaveCommodities, e);
+  }
+});
+
 const DB = {
-  connection: null,
   init: (): Promise<Connection> => {
-    let result = Promise.resolve(this.connection);
-    if (!this.connection) {
+    let result;
+    if (!getConnectionManager().has('default')) {
       result = createConnection({
         type: 'sqlite',
         database: path.resolve(__dirname, '../../db.sqlite'),
@@ -83,9 +111,10 @@ const DB = {
         ],
       })
         .then(connection => {
-          this.connection = connection;
           return Promise.resolve(connection);
         });
+    } else {
+      result = Promise.resolve(getConnection());
     }
 
     return result;

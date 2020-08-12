@@ -8,6 +8,7 @@ interface FraganciaModelView {
   Description: string;
   Cost: number;
   Price: number;
+  totalQuantity: number;
   Components: CommodityModelView[];
 }
 
@@ -32,8 +33,10 @@ export class API {
       .find({relations: ['Components']});
     result = Promise.all(
       fragancias.map(async fragancia => {
+        let totalQuantity = 0;
         const components = await Promise.all(fragancia.Components.map(async (value) => {
-          const commodity = await this.getCommodities(connection, value.Commodity_id);
+          const commodity = await this.getCommodity(connection, value.Commodity_id);
+          totalQuantity += value.Quantity;
           return {
             id: value.Commodity_id,
             Description: commodity.Description,
@@ -48,6 +51,7 @@ export class API {
           Description: fragancia.Description,
           Cost: fragancia.Cost,
           Price: fragancia.Price,
+          totalQuantity,
           Components: components
         };
       })
@@ -56,7 +60,7 @@ export class API {
   }
 
   // Gets components related to a fragancia.
-  public static getCommodities(connection: Connection, commodityId: number): Promise<Commodity> {
+  public static getCommodity(connection: Connection, commodityId: number): Promise<Commodity> {
     let result: Promise<Commodity>;
     const commoditiesRep = connection
       .getRepository(Commodity);
@@ -75,41 +79,64 @@ export class API {
     return result;
   }
 
-  public static async saveChanges(connection: Connection, fragancia: FraganciaModelView): Promise<FraganciaModelView> {
-    const f = new Fragancia();
+  public static getCommodities(connection: Connection): Promise<Commodity[]> {
+    let result: Promise<Commodity[]>;
+    const commoditiesRep = connection
+      .getRepository(Commodity);
+
+    result = commoditiesRep
+      .find();
+
+    return result;
+  }
+
+  public static async saveCommodity(commodity: Commodity): Promise<Commodity> {
+    let result: Promise<Commodity>;
+    const entityManager = getManager();
+    const c = await entityManager.findOne(Commodity, commodity.id);
+    c.Cost = commodity.Cost;
+    try {
+      await entityManager.save(c);
+      result = Promise.resolve(commodity);
+    } catch (e) {
+      console.log(e);
+      result = Promise.reject(e);
+    }
+
+    return result;
+  }
+
+  public static async saveChanges(fragancia: FraganciaModelView): Promise<FraganciaModelView> {
+    const entityManager = getManager();
+    const f = await entityManager.findOne(Fragancia, fragancia.id);
     f.id = fragancia.id;
     f.Description = fragancia.Description;
-    f.Components = fragancia.Components.map(component => {
-      const fraganciaCommodity = new FraganciaCommodity();
+    let cost = 0.0;
+    f.Components = await Promise.all(fragancia.Components.map(async component => {
+      const fraganciaCommodity = await entityManager.findOne(FraganciaCommodity, component.JoinTableId);
       fraganciaCommodity.Fragancia_id = fragancia.id;
       fraganciaCommodity.Quantity = component.Quantity;
       fraganciaCommodity.Commodity_id = component.id;
       fraganciaCommodity.id = component.JoinTableId;
+      await entityManager
+        .save(fraganciaCommodity);
 
-      const commodity = new Commodity();
-      commodity.id = component.id;
-      commodity.Cost = component.CostByUnit;
-      commodity.Description = component.Description;
-      fraganciaCommodity.commodity = commodity;
 
+      cost += component.CostByUnit * fraganciaCommodity.Quantity;
       return fraganciaCommodity;
-    });
+    }));
 
-    let cost = 0.0;
-    fragancia.Components
-      .forEach(component => cost += component.CostByUnit * component.Quantity);
     f.Price = cost * 2;
     f.Cost = cost;
     try {
-      await getConnection()
-        .manager
+      await entityManager
         .save(f);
       fragancia.Cost = f.Cost;
       fragancia.Price = f.Price;
-      return fragancia;
+      return Promise.resolve(fragancia);
     } catch (e) {
       console.log(e);
-      return e;
+      return Promise.reject(e);
     }
   }
 }
