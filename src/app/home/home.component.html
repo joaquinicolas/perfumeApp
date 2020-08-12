@@ -1,4 +1,4 @@
-<div class="container-fluid" style="margin-top: 20px">
+<div class="container-fluid doNotPrint" style="margin-top: 20px">
   <table class="table table-hover">
     <thead class="thead-dark">
     <tr>
@@ -30,16 +30,13 @@
           <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
                 (click)="toggleFraganciaPopup($event,p, 1)">print</span>
       </td>
-      <td>
-          <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
-                (click)="toggleFraganciaPopup($event, p, 2)">forward</span>
-      </td>
     </tr>
     </tbody>
   </table>
 </div>
 
-<button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary" (click)="open(content)">
+<button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary doNotPrint"
+        (click)="open(content)">
   Launch demo modal
 </button>
 
@@ -94,7 +91,7 @@
   </div>
 </ng-template>
 
-<button style="visibility: hidden" id="print_btn" #print_btn class="btn btn-lg btn-outline-primary"
+<button style="visibility: hidden" id="print_btn" #print_btn class="btn btn-lg btn-outline-primary doNotPrint"
         (click)="open(print, '')">
   Launch demo modal
 </button>
@@ -102,7 +99,7 @@
 <ng-template #print let-modal>
   <div class="modal-header">
     <h4 class="modal-title">{{fragancia.Description}}</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <button type="button" class="close doNotPrint" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -117,7 +114,7 @@
       <tbody>
       <tr *ngFor="let c of fragancia.Components">
         <td>
-          {{c.Description}}
+          {{c.Description | vowels}}
         </td>
         <td>
           <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
@@ -127,6 +124,10 @@
     </table>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="close(print)">Imprimir</button>
+    <button type="button" class="btn btn-outline-dark doNotPrint" (click)="close(print)">Imprimir</button>
   </div>
 </ng-template>
+
+<div class="printContent" *ngIf="fragancia">
+  <ng-container *ngTemplateOutlet="print"></ng-container>
+</div>

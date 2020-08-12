@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   }
 
   open(content, size: string = 'xl') {
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: size});
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size});
   }
 
   close(content) {
@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
         this.excelService.saveChanges(this.fragancia);
         break;
       case Actions.PrintFragancia:
-        console.log('Printing...');
+        window.print();
         break;
       case Actions.ExportFragancia:
         console.log('Exporting...');

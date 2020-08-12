@@ -12,6 +12,7 @@ import { DetailComponent } from './detail/detail.component';
 import { NgxElectronModule } from 'ngx-electron';
 import { FormsModule } from '@angular/forms';
 import { MoneyPipe } from './money.pipe';
+import { VowelsPipe } from './vowels.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { MoneyPipe } from './money.pipe';
     HomeComponent,
     UploadComponent,
     DetailComponent,
-    MoneyPipe
+    MoneyPipe,
+    VowelsPipe
   ],
   imports: [
     BrowserModule,
