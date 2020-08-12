@@ -1,10 +1,10 @@
-import {AfterContentChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Observable} from 'rxjs';
-import {DecimalPipe} from '@angular/common';
 import {FormControl} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
+import {ExportService} from '../export.service';
 
 export interface Fragancia {
   id: number;
@@ -51,12 +51,17 @@ export class HomeComponent implements OnInit {
   action: Actions;
   perfumes$: Observable<Fragancia[]>;
   filter = new FormControl('');
+  totalQuantity: number;
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('export_btn') exportBtn: ElementRef;
+  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
 
-  constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
+  constructor(
+    private excelService: ExcelService,
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal,
+    private exportService: ExportService) {
   }
 
   ngOnInit(): void {
@@ -84,9 +89,6 @@ export class HomeComponent implements OnInit {
       case Actions.PrintFragancia:
         window.print();
         break;
-      case Actions.ExportFragancia:
-        console.log('Exporting...');
-        break;
     }
   }
 
@@ -96,14 +98,28 @@ export class HomeComponent implements OnInit {
     this.action = action;
     switch (action) {
       case Actions.DisplayFragancia:
+        this.totalQuantity = 0;
+        p.Components.forEach(value => {
+          this.totalQuantity += value.Quantity;
+        });
         this.trigger.nativeElement.click();
         break;
       case Actions.PrintFragancia:
         this.printBtn.nativeElement.click();
         break;
-      case Actions.ExportFragancia:
-        this.exportBtn.nativeElement.click();
-        break;
     }
+  }
+
+  updateTotalQuantity() {
+    this.totalQuantity = 0;
+    this.fragancia.Components.forEach(value => {
+      this.totalQuantity += value.Quantity;
+    });
+  }
+
+  exportTOExcel() {
+    this.action = Actions.ExportFragancia;
+    this.exportService.exportExcel(this.fragancia.Components, this.fragancia.Description);
+    this.action = -1;
   }
 }
