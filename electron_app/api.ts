@@ -4,7 +4,6 @@ import {Commodity} from './entity/Commodity';
 import {FraganciaCommodity} from './entity/FraganciaCommodity';
 
 interface FraganciaModelView {
-  id: number;
   Description: string;
   Cost: number;
   Price: number;
@@ -13,7 +12,6 @@ interface FraganciaModelView {
 }
 
 interface CommodityModelView {
-  id: number;
   Description: string;
   Cost: number;
   CostByUnit: number;
@@ -35,10 +33,9 @@ export class API {
       fragancias.map(async fragancia => {
         let totalQuantity = 0;
         const components = await Promise.all(fragancia.Components.map(async (value) => {
-          const commodity = await this.getCommodity(connection, value.Commodity_id);
+          const commodity = await this.getCommodity(connection, value.Commodity_description);
           totalQuantity += value.Quantity;
           return {
-            id: value.Commodity_id,
             Description: commodity.Description,
             CostByUnit: commodity.Cost, // How much costs a kilogram of commodity?
             Cost: commodity.Cost * value.Quantity, // How much spends we for x.x grams of commodity?
@@ -47,7 +44,6 @@ export class API {
           };
         }));
         return {
-          id: fragancia.id,
           Description: fragancia.Description,
           Cost: fragancia.Cost,
           Price: fragancia.Price,
@@ -60,14 +56,14 @@ export class API {
   }
 
   // Gets components related to a fragancia.
-  public static getCommodity(connection: Connection, commodityId: number): Promise<Commodity> {
+  public static getCommodity(connection: Connection, commodityDescription: string): Promise<Commodity> {
     let result: Promise<Commodity>;
     const commoditiesRep = connection
       .getRepository(Commodity);
 
     result = commoditiesRep
       .createQueryBuilder()
-      .where(`id = ${commodityId}`)
+      .where(`Description LIKE '${commodityDescription}%'`)
       .select(['Description AS Description', 'Cost AS Cost'])
       .getRawOne()
       .then((rawCommodity) => {
@@ -93,7 +89,7 @@ export class API {
   public static async saveCommodity(commodity: Commodity): Promise<Commodity> {
     let result: Promise<Commodity>;
     const entityManager = getManager();
-    const c = await entityManager.findOne(Commodity, commodity.id);
+    const c = await entityManager.findOne(Commodity, commodity.Description);
     c.Cost = commodity.Cost;
     try {
       await entityManager.save(c);
@@ -108,15 +104,14 @@ export class API {
 
   public static async saveChanges(fragancia: FraganciaModelView): Promise<FraganciaModelView> {
     const entityManager = getManager();
-    const f = await entityManager.findOne(Fragancia, fragancia.id);
-    f.id = fragancia.id;
+    const f = await entityManager.findOne(Fragancia, fragancia.Description);
     f.Description = fragancia.Description;
     let cost = 0.0;
     f.Components = await Promise.all(fragancia.Components.map(async component => {
       const fraganciaCommodity = await entityManager.findOne(FraganciaCommodity, component.JoinTableId);
-      fraganciaCommodity.Fragancia_id = fragancia.id;
+      fraganciaCommodity.Fragancia_description = fragancia.Description;
       fraganciaCommodity.Quantity = component.Quantity;
-      fraganciaCommodity.Commodity_id = component.id;
+      fraganciaCommodity.Commodity_description = component.Description;
       fraganciaCommodity.id = component.JoinTableId;
       await entityManager
         .save(fraganciaCommodity);

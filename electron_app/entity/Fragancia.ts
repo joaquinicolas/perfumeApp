@@ -1,21 +1,18 @@
-import { PrimaryGeneratedColumn, Column, Entity, BaseEntity, OneToMany } from "typeorm";
-import { FraganciaCommodity } from './FraganciaCommodity';
+import {PrimaryGeneratedColumn, Column, Entity, BaseEntity, OneToMany, PrimaryColumn} from 'typeorm';
+import {FraganciaCommodity} from './FraganciaCommodity';
 
 @Entity({synchronize: false})
 export class Fragancia {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryColumn('text', {name: 'Description'})
+  Description: string;
 
-    @Column()
-    Description: string;
+  @Column('double')
+  Cost: number;
 
-    @Column('double')
-    Cost: number;
+  @Column('double')
+  Price: number;
 
-    @Column('double')
-    Price: number;
-
-    @OneToMany(type => FraganciaCommodity, fraganciaToCommodity => fraganciaToCommodity.fragancia)
-    public Components!: FraganciaCommodity[];
+  @OneToMany(type => FraganciaCommodity, fraganciaToCommodity => fraganciaToCommodity.fragancia)
+  public Components!: FraganciaCommodity[];
 }

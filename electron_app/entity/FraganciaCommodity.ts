@@ -8,11 +8,11 @@ export class FraganciaCommodity {
   @PrimaryColumn()
   public id!: number;
 
-  @Column('integer', {name: 'fraganciaId'})
-  public Fragancia_id!: number;
+  @Column('text', {name: 'fraganciaDescription'})
+  public Fragancia_description!: string;
 
-  @Column('integer', {name: 'commodityId'})
-  public Commodity_id!: number;
+  @Column('text', {name: 'commodityDescription'})
+  public Commodity_description!: string;
 
   @Column()
   public Quantity: number;

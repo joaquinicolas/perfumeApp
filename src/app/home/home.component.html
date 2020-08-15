@@ -136,6 +136,6 @@
   </div>
 </ng-template>
 
-<div class="printContent" *ngIf="fragancia">
+<div class="printContent" *ngIf="fragancia && action == 1">
   <ng-container *ngTemplateOutlet="print"></ng-container>
 </div>

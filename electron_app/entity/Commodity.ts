@@ -1,18 +1,15 @@
-import { PrimaryColumn, Column, OneToMany, Entity,  } from 'typeorm';
-import { FraganciaCommodity } from './FraganciaCommodity';
+import {PrimaryColumn, Column, OneToMany, Entity,} from 'typeorm';
+import {FraganciaCommodity} from './FraganciaCommodity';
 
-@Entity({ synchronize: false, name: 'Commodities' })
+@Entity({synchronize: false, name: 'Commodities'})
 export class Commodity {
 
-    @PrimaryColumn()
-    public id: number;
+  @PrimaryColumn('text', {name: 'Description'})
+  public Description: string;
 
-    @Column()
-    public Description: string;
+  @Column()
+  public Cost: number;
 
-    @Column()
-    public Cost: number;
-
-    @OneToMany(type => FraganciaCommodity, commodityToFragancias => commodityToFragancias.commodity)
-    public commodityFragancias!: FraganciaCommodity[];
+  @OneToMany(type => FraganciaCommodity, commodityToFragancias => commodityToFragancias.commodity)
+  public commodityFragancias!: FraganciaCommodity[];
 }

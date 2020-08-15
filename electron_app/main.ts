@@ -56,6 +56,7 @@ ipcMain.on('getFragancias', () => {
   return DB.init()
     .then(connection => API.getFragancias(connection))
     .then(fragments => {
+      console.log(fragments);
       win.webContents.send('getFragancias', fragments);
     })
     .catch(err => console.error(err));
@@ -101,7 +102,7 @@ const DB = {
     if (!getConnectionManager().has('default')) {
       result = createConnection({
         type: 'sqlite',
-        database: path.resolve(__dirname, '../../db.sqlite'),
+        database: path.resolve(__dirname, 'db.sqlite'),
         synchronize: true,
         logging: false,
         entities: [

@@ -29,12 +29,6 @@ module.exports.Commodity = sequelize.define('Commodity', {
     allowNull: false,
     defaultValue: 0.0
   },
-  id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    autoIncrement: false,
-    primaryKey: true
-  }
 }, {
   sequelize,
   modelName: 'Commodity'
@@ -66,12 +60,14 @@ module.exports.FraganciaCommodity = sequelize.define('FraganciaCommodity', {
     allowNull: false,
     defaultValue: 0.0
   },
-  fraganciaId: {
-    type: DataTypes.INTEGER,
+  // This match with Fragancia.Description
+  fraganciaDescription: {
+    type: DataTypes.STRING,
     allowNull: false
   },
-  commodityId: {
-    type: DataTypes.INTEGER,
+  // This match with Commodity.Description
+  commodityDescription: {
+    type: DataTypes.STRING,
     allowNull: false
   }
 }, {

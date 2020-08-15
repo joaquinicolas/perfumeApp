@@ -68,6 +68,7 @@ export class HomeComponent implements OnInit {
     this.excelService.readData();
     this.excelService.gotFragancias.subscribe(values => {
       this.perfumes = values;
+      console.log(values);
       this.perfumes$ = this.filter.valueChanges.pipe(
         startWith(''),
         map(text => search(text, this.perfumes))
