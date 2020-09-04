@@ -7,6 +7,7 @@ import {API} from './api';
 import {Fragancia} from './entity/Fragancia';
 import {FraganciaCommodity} from './entity/FraganciaCommodity';
 import {Commodity} from './entity/Commodity';
+import * as fs from 'fs';
 
 enum AppEvents {
   ReadCommodities = 'getCommodities',
@@ -15,6 +16,7 @@ enum AppEvents {
   SaveFragancias = 'saveChanges',
 }
 
+let dbPath = '/opt/fragancias';
 let win: BrowserWindow;
 
 function createWindow() {
@@ -33,7 +35,14 @@ function createWindow() {
     slashes: true
   }));
 
-  win.webContents.openDevTools();
+  if (process.platform === 'win32') {
+    dbPath = path.resolve('C://fragancias');
+  }
+
+  if (!fs.existsSync(dbPath)) {
+    fs.mkdirSync(dbPath);
+  }
+  // win.webContents.openDevTools();
 
   win.on('closed', () => {
     win = null;
@@ -102,7 +111,7 @@ const DB = {
     if (!getConnectionManager().has('default')) {
       result = createConnection({
         type: 'sqlite',
-        database: path.resolve(__dirname, 'db.sqlite'),
+        database: path.resolve(dbPath, 'db.sqlite'),
         synchronize: true,
         logging: false,
         entities: [
