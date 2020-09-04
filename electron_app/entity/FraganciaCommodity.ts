@@ -1,11 +1,11 @@
-import {Entity, Column, ManyToOne, PrimaryColumn} from 'typeorm';
+import {Entity, Column, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
 import {Fragancia} from './Fragancia';
 import {Commodity} from './Commodity';
 
 @Entity({synchronize: false, name: 'FraganciaCommodities'})
 export class FraganciaCommodity {
 
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   public id!: number;
 
   @Column('text', {name: 'fraganciaDescription'})

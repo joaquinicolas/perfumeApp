@@ -13,6 +13,7 @@ import { NgxElectronModule } from 'ngx-electron';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MoneyPipe } from './money.pipe';
 import { VowelsPipe } from './vowels.pipe';
+import { FraganciaFormComponent } from './fragancia-form/fragancia-form.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { VowelsPipe } from './vowels.pipe';
     UploadComponent,
     DetailComponent,
     MoneyPipe,
-    VowelsPipe
+    VowelsPipe,
+    FraganciaFormComponent
   ],
     imports: [
         BrowserModule,

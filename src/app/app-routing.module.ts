@@ -4,11 +4,25 @@ import {AppComponent} from './app.component';
 import {AuthGuard} from './auth/auth-guard.service';
 import {HomeComponent} from './home/home.component';
 import {DetailComponent} from './detail/detail.component';
+import {FraganciaFormComponent} from './fragancia-form/fragancia-form.component';
 
 
 const routes: Routes = [
-  {path: '', component: HomeComponent, canActivate: [AuthGuard]},
-  {path: 'commodities', component: DetailComponent, canActivate: [AuthGuard]}
+  {
+    path: '',
+    component: HomeComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'new_fragancia',
+    component: FraganciaFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'commodities',
+    component: DetailComponent,
+    canActivate: [AuthGuard],
+  }
 ];
 
 @NgModule({

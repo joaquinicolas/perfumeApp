@@ -7,17 +7,17 @@ const Commodity_1 = require("./Commodity");
 let FraganciaCommodity = class FraganciaCommodity {
 };
 tslib_1.__decorate([
-    typeorm_1.PrimaryColumn(),
+    typeorm_1.PrimaryGeneratedColumn(),
     tslib_1.__metadata("design:type", Number)
 ], FraganciaCommodity.prototype, "id", void 0);
 tslib_1.__decorate([
-    typeorm_1.Column('integer', { name: 'fraganciaId' }),
-    tslib_1.__metadata("design:type", Number)
-], FraganciaCommodity.prototype, "Fragancia_id", void 0);
+    typeorm_1.Column('text', { name: 'fraganciaDescription' }),
+    tslib_1.__metadata("design:type", String)
+], FraganciaCommodity.prototype, "Fragancia_description", void 0);
 tslib_1.__decorate([
-    typeorm_1.Column('integer', { name: 'commodityId' }),
-    tslib_1.__metadata("design:type", Number)
-], FraganciaCommodity.prototype, "Commodity_id", void 0);
+    typeorm_1.Column('text', { name: 'commodityDescription' }),
+    tslib_1.__metadata("design:type", String)
+], FraganciaCommodity.prototype, "Commodity_description", void 0);
 tslib_1.__decorate([
     typeorm_1.Column(),
     tslib_1.__metadata("design:type", Number)

@@ -4,8 +4,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 export interface Commodity {
   id: number;
-  Description: string;
   Cost: number;
+  Quantity: number;
+  JoinTableId: string;
+  Description: string;
 }
 
 @Component({

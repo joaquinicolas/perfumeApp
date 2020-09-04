@@ -1,9 +1,12 @@
-<div class="d-flex justify-content-center doNotPrint">
+<div class="d-flex justify-content-center doNotPrint align-items-center" style="height: 70px;">
   <form>
     <div class="form-group form-inline">
       Buscar: <input class="form-control ml-2" type="text" [formControl]="filter"/>
     </div>
   </form>
+  <div class="d-flex flex-grow-1 justify-content-end">
+    <button type="button" class="btn btn-outline-dark" [routerLink]="'/new_fragancia'">Nuevo</button>
+  </div>
 </div>
 <div class="container-fluid doNotPrint" style="margin-top: 20px">
   <table class="table table-hover">
@@ -70,14 +73,14 @@
           {{c.Description}}
         </td>
         <td>
-          {{c.CostByUnit | number : '1.2-2'}}
+          {{c.Cost | number : '1.2-2'}}
         </td>
         <td>
           <input type="number" [(ngModel)]="c.Quantity" (ngModelChange)="updateTotalQuantity();" data-decimals="2"
                  min="0" step="0.1"/>
         </td>
         <td>
-          {{c.Quantity * c.CostByUnit | number : '1.2-2' }}
+          {{c.Quantity * c.Cost | number : '1.2-2' }}
         </td>
       </tr>
       <tr>

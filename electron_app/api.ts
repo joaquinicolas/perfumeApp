@@ -32,9 +32,11 @@ export class API {
     result = Promise.all(
       fragancias.map(async fragancia => {
         let totalQuantity = 0;
+        let costFragancia = 0.00;
         const components = await Promise.all(fragancia.Components.map(async (value) => {
           const commodity = await this.getCommodity(connection, value.Commodity_description);
           totalQuantity += value.Quantity;
+          costFragancia += commodity.Cost * value.Quantity;
           return {
             Description: commodity.Description,
             CostByUnit: commodity.Cost, // How much costs a kilogram of commodity?
@@ -45,8 +47,8 @@ export class API {
         }));
         return {
           Description: fragancia.Description,
-          Cost: fragancia.Cost,
-          Price: fragancia.Price,
+          Cost: costFragancia,
+          Price: costFragancia * 2,
           totalQuantity,
           Components: components
         };
@@ -105,6 +107,9 @@ export class API {
   public static async saveChanges(fragancia: FraganciaModelView): Promise<FraganciaModelView> {
     const entityManager = getManager();
     const f = await entityManager.findOne(Fragancia, fragancia.Description);
+    if (!f) {
+      return this.createFragancia(fragancia);
+    }
     f.Description = fragancia.Description;
     let cost = 0.0;
     f.Components = await Promise.all(fragancia.Components.map(async component => {
@@ -133,5 +138,27 @@ export class API {
       console.log(e);
       return Promise.reject(e);
     }
+  }
+
+  private static async createFragancia(fragancia: FraganciaModelView): Promise<FraganciaModelView> {
+    const manager = getManager();
+    const f = new Fragancia();
+    f.Description = fragancia.Description;
+    f.Price = fragancia.Price;
+    f.Cost = fragancia.Cost;
+    f.Components = await Promise.all(fragancia.Components.map(async value => {
+      const fc = new FraganciaCommodity();
+      fc.Quantity = value.Quantity;
+      fc.Fragancia_description = fragancia.Description;
+      fc.Commodity_description = value.Description;
+
+      await manager
+        .save(fc);
+
+      return fc;
+    }));
+
+    await manager.save(f);
+    return Promise.resolve(fragancia);
   }
 }

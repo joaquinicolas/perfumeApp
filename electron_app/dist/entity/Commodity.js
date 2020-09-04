@@ -6,11 +6,7 @@ const FraganciaCommodity_1 = require("./FraganciaCommodity");
 let Commodity = class Commodity {
 };
 tslib_1.__decorate([
-    typeorm_1.PrimaryColumn(),
-    tslib_1.__metadata("design:type", Number)
-], Commodity.prototype, "id", void 0);
-tslib_1.__decorate([
-    typeorm_1.Column(),
+    typeorm_1.PrimaryColumn('text', { name: 'Description' }),
     tslib_1.__metadata("design:type", String)
 ], Commodity.prototype, "Description", void 0);
 tslib_1.__decorate([

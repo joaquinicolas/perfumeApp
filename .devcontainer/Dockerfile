@@ -13,4 +13,4 @@ FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-14
 #     && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
-EXPOSE 9223 4200
+#EXPOSE 9223 4200

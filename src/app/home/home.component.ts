@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {FormControl} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
 import {ExportService} from '../export.service';
+import {Commodity} from '../detail/detail.component';
 
 export interface Fragancia {
   id: number;
@@ -13,15 +14,6 @@ export interface Fragancia {
   Price: number;
   Components: Commodity[];
   totalQuantity: number;
-}
-
-interface Commodity {
-  id: number;
-  Description: string;
-  Cost: number;
-  CostByUnit: number;
-  Quantity: number;
-  JoinTableId: number;
 }
 
 enum Actions {

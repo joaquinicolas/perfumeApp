@@ -40,7 +40,7 @@ export class ExcelService {
       } else {
         const fragancia = args as Fragancia;
         this.fraganciasSubject.next(
-          this.fraganciasSubject.value.map(value => value.id === fragancia.id ? fragancia : value)
+          this.fraganciasSubject.value.map(value => value.Description === fragancia.Description ? fragancia : value)
         );
       }
       console.log('Changes saved successfully');
@@ -57,7 +57,7 @@ export class ExcelService {
       } else {
         const commodity = args as Commodity;
         this.commoditySubject.next(
-          this.commoditySubject.value.map(value => value.id === commodity.id ? commodity : value)
+          this.commoditySubject.value.map(value => value.Description === commodity.Description ? commodity : value)
         );
       }
     });
