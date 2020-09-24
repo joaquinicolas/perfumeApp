@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start:electron": "electron . --remote-debugging-port=9223",
-    "start:electron-main": "electron --inspect=5858 ."
+    "start:electron-main": "electron --inspect=5858 .",
+    "postinstall": "electron-builder install-app-deps"
   },
   "private": true,
   "dependencies": {
@@ -48,6 +49,7 @@
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
     "electron": "^9.0.4",
+    "electron-builder": "^22.8.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~5.0.0",
