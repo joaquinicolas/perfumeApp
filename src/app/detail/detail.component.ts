@@ -4,6 +4,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 export interface Commodity {
   id: number;
+  Name: string;
   Cost: number;
   Quantity: number;
   JoinTableId: string;

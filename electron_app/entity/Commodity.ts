@@ -10,6 +10,9 @@ export class Commodity {
   @Column()
   public Cost: number;
 
+  @Column()
+  public Name: string;
+
   @OneToMany(type => FraganciaCommodity, commodityToFragancias => commodityToFragancias.commodity)
   public commodityFragancias!: FraganciaCommodity[];
 }

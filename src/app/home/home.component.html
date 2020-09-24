@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center doNotPrint align-items-center" style="height: 70px;">
   <form>
     <div class="form-group form-inline">
-      Buscar: <input class="form-control ml-2" type="text" [formControl]="filter"/>
+      Buscar: <input class="form-control ml-2" type="text" [formControl]="filter" />
     </div>
   </form>
   <div class="d-flex flex-grow-1 justify-content-end">
@@ -11,42 +11,42 @@
 <div class="container-fluid doNotPrint" style="margin-top: 20px">
   <table class="table table-hover">
     <thead class="thead-dark">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Porcentaje</th>
-      <th scope="col">Costo</th>
-      <th scope="col">Precio</th>
-      <th></th>
-      <th></th>
-    </tr>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Costo</th>
+        <th scope="col">Precio</th>
+        <th></th>
+        <th></th>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of perfumes$ | async; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
-      <th scope="row">{{i + 1}}</th>
-      <td>
-        <ngb-highlight [result]="p.Description" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.totalQuantity * 100 | number: '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.Cost | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.Price | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
+      <tr *ngFor="let p of perfumes$ | async; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
+        <th scope="row">{{i + 1}}</th>
+        <td>
+          <ngb-highlight [result]="p.Description" [term]="filter.value"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="p.totalQuantity * 100 | number: '1.2-2'" [term]="filter.value"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="p.Cost | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="p.Price | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
+        </td>
+        <td>
           <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
-                (click)="toggleFraganciaPopup($event,p, 1)">print</span>
-      </td>
-    </tr>
+            (click)="toggleFraganciaPopup($event,p, 1)">print</span>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
 
 <button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary doNotPrint"
-        (click)="open(content)">
+  (click)="open(content)">
   Launch demo modal
 </button>
 
@@ -60,39 +60,39 @@
   <div class="modal-body">
     <table class="table table-borderless">
       <thead>
-      <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Costo unitario</th>
-        <th scope="col">Cantidad</th>
-        <th scope="col">Costo Total</th>
-      </tr>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Costo unitario</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Costo Total</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let c of fragancia.Components">
-        <td>
-          {{c.Description}}
-        </td>
-        <td>
-          {{c.Cost | number : '1.2-2'}}
-        </td>
-        <td>
-          <input type="number" [(ngModel)]="c.Quantity" (ngModelChange)="updateTotalQuantity();" data-decimals="2"
-                 min="0" step="0.1"/>
-        </td>
-        <td>
-          {{c.Quantity * c.Cost | number : '1.2-2' }}
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          <b>Cantidad Total:</b>
-        </td>
-        <td>
-          {{this.totalQuantity}}
-        </td>
-        <td></td>
-      </tr>
+        <tr *ngFor="let c of fragancia.Components">
+          <td>
+            {{c.Description}}
+          </td>
+          <td>
+            {{c.Cost | number : '1.2-2'}}
+          </td>
+          <td>
+            <input type="number" [(ngModel)]="c.Quantity" (ngModelChange)="updateTotalQuantity();" data-decimals="2"
+              min="0" step="0.1" />
+          </td>
+          <td>
+            {{c.Quantity * c.Cost | number : '1.2-2' }}
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <b>Cantidad Total:</b>
+          </td>
+          <td>
+            {{this.totalQuantity}}
+          </td>
+          <td></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -103,7 +103,7 @@
 </ng-template>
 
 <button style="visibility: hidden" id="print_btn" #print_btn class="btn btn-lg btn-outline-primary doNotPrint"
-        (click)="open(print, '')">
+  (click)="open(print, '')">
   Launch demo modal
 </button>
 
@@ -117,20 +117,20 @@
   <div class="modal-body">
     <table class="table table-borderless">
       <thead>
-      <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Cantidad</th>
-      </tr>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Cantidad</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let c of fragancia.Components">
-        <td>
-          {{c.Description | vowels}}
-        </td>
-        <td>
-          <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
-        </td>
-      </tr>
+        <tr *ngFor="let c of fragancia.Components">
+          <td>
+            {{c.Name}}
+          </td>
+          <td>
+            <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1" />
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
