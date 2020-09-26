@@ -1,6 +1,10 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Fragancia} from '../home/home.component';
+import {FormControl} from '@angular/forms';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 export interface Commodity {
   id: number;
@@ -11,6 +15,16 @@ export interface Commodity {
   Description: string;
 }
 
+function search(text: string, commodities: Commodity[]): Commodity[] {
+  if (text === '') {
+    return commodities;
+  }
+  return commodities.filter(v => {
+    const term = text.toLowerCase();
+    return v.Description.toLowerCase().includes(term);
+  });
+}
+
 @Component({
   selector: 'app-detail',
   templateUrl: './detail.component.html',
@@ -19,6 +33,8 @@ export interface Commodity {
 export class DetailComponent implements OnInit {
   commodities: Commodity[];
   commodity: Commodity;
+  $commodities: Observable<Commodity[]>;
+  filter = new FormControl('');
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
 
@@ -29,6 +45,11 @@ export class DetailComponent implements OnInit {
     this.excelService.readCommodities();
     this.excelService.gotCommodities.subscribe(values => {
       this.commodities = values;
+      console.log(values);
+      this.$commodities = this.filter.valueChanges.pipe(
+        startWith(''),
+        map(text => search(text, this.commodities))
+      );
       this.cdr.detectChanges();
     });
   }

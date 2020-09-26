@@ -14,6 +14,10 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Number)
 ], Commodity.prototype, "Cost", void 0);
 tslib_1.__decorate([
+    typeorm_1.Column(),
+    tslib_1.__metadata("design:type", String)
+], Commodity.prototype, "Name", void 0);
+tslib_1.__decorate([
     typeorm_1.OneToMany(type => FraganciaCommodity_1.FraganciaCommodity, commodityToFragancias => commodityToFragancias.commodity),
     tslib_1.__metadata("design:type", Array)
 ], Commodity.prototype, "commodityFragancias", void 0);
