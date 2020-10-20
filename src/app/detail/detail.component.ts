@@ -3,10 +3,9 @@ import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 export interface Commodity {
-  id: number;
+  _id: any;
   Cost: number;
   Quantity: number;
-  JoinTableId: string;
   Description: string;
 }
 

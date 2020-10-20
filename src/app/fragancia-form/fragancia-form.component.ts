@@ -51,7 +51,7 @@ export class FraganciaFormComponent implements OnInit {
       Description: '',
       Components: [],
       totalQuantity: 0,
-      id: 0
+      _id: 0
     };
     this.selectedCommodity$.subscribe({
       next: value => {

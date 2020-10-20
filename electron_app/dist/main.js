@@ -5,20 +5,19 @@ require("reflect-metadata");
 const electron_1 = require("electron");
 const url = require("url");
 const path = require("path");
-const typeorm_1 = require("typeorm");
 const api_1 = require("./api");
-const Fragancia_1 = require("./entity/Fragancia");
-const FraganciaCommodity_1 = require("./entity/FraganciaCommodity");
-const Commodity_1 = require("./entity/Commodity");
 const fs = require("fs");
+const Datastore = require("nedb");
 var AppEvents;
 (function (AppEvents) {
     AppEvents["ReadCommodities"] = "getCommodities";
-    AppEvents["SaveCommodities"] = "saveCommodities";
+    AppEvents["SaveCommodity"] = "saveCommodity";
     AppEvents["ReadFragancias"] = "getFragancias";
     AppEvents["SaveFragancias"] = "saveChanges";
-})(AppEvents || (AppEvents = {}));
-let dbPath = '/opt/fragancias';
+    AppEvents["CommodityById"] = "commodityById";
+})(AppEvents = exports.AppEvents || (exports.AppEvents = {}));
+const fraganciasFolder = 'fragancias';
+let dbPath = path.resolve(userHome(), fraganciasFolder);
 let win;
 function createWindow() {
     win = new electron_1.BrowserWindow({
@@ -26,20 +25,14 @@ function createWindow() {
         height: 600,
         backgroundColor: '#ffffff',
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
         },
     });
     win.loadURL(url.format({
         pathname: path.resolve(__dirname, '../../dist/index.html'),
         protocol: 'file:',
-        slashes: true
+        slashes: true,
     }));
-    if (process.platform === 'win32') {
-        dbPath = path.resolve('C://fragancias');
-    }
-    if (!fs.existsSync(dbPath)) {
-        fs.mkdirSync(dbPath);
-    }
     win.webContents.openDevTools();
     win.on('closed', () => {
         win = null;
@@ -56,71 +49,89 @@ electron_1.app.on('activate', () => {
         createWindow();
     }
 });
-electron_1.ipcMain.on('getFragancias', () => {
-    return DB.init()
-        .then(connection => api_1.API.getFragancias(connection))
-        .then(fragments => {
-        console.log(fragments);
-        win.webContents.send('getFragancias', fragments);
-    })
-        .catch(err => console.error(err));
-});
-electron_1.ipcMain.on('saveChanges', (event, args) => {
-    return DB.init()
-        .then(connection => api_1.API.saveChanges(args))
-        .then(f => {
-        win.webContents.send('saveChanges', f);
-    })
-        .catch(err => {
-        console.log(err);
-        win.webContents.send('saveChanges', err);
-    });
-});
-electron_1.ipcMain.on(AppEvents.ReadCommodities, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
-    const conn = yield DB.init();
+electron_1.ipcMain.on(AppEvents.ReadFragancias, () => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const store = new Store();
+    const api = new api_1.API(store);
     try {
-        const commodities = yield api_1.API.getCommodities(conn);
+        let fragancias = yield api.getFragancias();
+        win.webContents.send(AppEvents.ReadFragancias, fragancias);
+    }
+    catch (error) {
+        showErrorDialog(error);
+    }
+}));
+electron_1.ipcMain.on(AppEvents.SaveFragancias, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const api = new api_1.API(new Store());
+    try {
+        let newFrag = yield api.saveFragancia(args);
+        win.webContents.send(AppEvents.SaveFragancias);
+    }
+    catch (e) {
+        showErrorDialog(e);
+    }
+}));
+electron_1.ipcMain.on(AppEvents.ReadCommodities, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const api = new api_1.API(new Store());
+    try {
+        let commodities = yield api.getCommodities();
         win.webContents.send(AppEvents.ReadCommodities, commodities);
     }
     catch (e) {
-        console.log(e);
-        win.webContents.send(AppEvents.ReadCommodities, e);
+        showErrorDialog(e);
     }
 }));
-electron_1.ipcMain.on(AppEvents.SaveCommodities, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
-    yield DB.init();
+electron_1.ipcMain.on(AppEvents.SaveCommodity, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const api = new api_1.API(new Store());
     try {
-        const commodity = yield api_1.API.saveCommodity(args);
-        win.webContents.send(AppEvents.SaveCommodities, commodity);
+        let newComm = yield api.saveCommodity(args);
+        win.webContents.send(AppEvents.SaveCommodity, newComm);
     }
     catch (e) {
-        console.log(e);
-        win.webContents.send(AppEvents.SaveCommodities, e);
+        showErrorDialog(e);
     }
 }));
-const DB = {
-    init: () => {
-        let result;
-        if (!typeorm_1.getConnectionManager().has('default')) {
-            result = typeorm_1.createConnection({
-                type: 'sqlite',
-                database: path.resolve(dbPath, 'db.sqlite'),
-                synchronize: true,
-                logging: false,
-                entities: [
-                    Fragancia_1.Fragancia,
-                    FraganciaCommodity_1.FraganciaCommodity,
-                    Commodity_1.Commodity
-                ],
-            })
-                .then(connection => {
-                return Promise.resolve(connection);
-            });
+electron_1.ipcMain.on(AppEvents.CommodityById, (event, args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const api = new api_1.API(new Store());
+    try {
+        api
+            .CommodityById(args)
+            .subscribe((x) => win.webContents.send(AppEvents.CommodityById, x));
+    }
+    catch (e) {
+        showErrorDialog(e);
+    }
+}));
+class Store {
+    constructor() {
+        if (typeof Store.instance === 'object') {
+            return Store.instance;
         }
-        else {
-            result = Promise.resolve(typeorm_1.getConnection());
+        try {
+            if (!fs.existsSync(dbPath)) {
+                fs.mkdirSync(dbPath);
+            }
+            this.db = {
+                fragancias: new Datastore(path.resolve(dbPath, 'fragancias.db')),
+                commodities: new Datastore(path.resolve(dbPath, 'commodities.db')),
+            };
+            this.db.fragancias.loadDatabase();
+            this.db.commodities.loadDatabase();
         }
-        return result;
-    },
-};
+        catch (error) {
+            showErrorDialog(error);
+        }
+        Store.instance = this;
+        return this;
+    }
+}
+exports.Store = Store;
+function showErrorDialog(msg) {
+    const title = 'Ocurrio un error';
+    electron_1.dialog.showErrorBox(title, msg);
+}
+function userHome() {
+    const linuxHome = 'HOME';
+    const win32Home = 'USERPROFILE';
+    return process.env[process.platform == 'win32' ? win32Home : linuxHome];
+}
 //# sourceMappingURL=main.js.map

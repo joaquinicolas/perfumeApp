@@ -1,14 +1,20 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {ExcelService} from '../excel.service';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Observable} from 'rxjs';
-import {FormControl} from '@angular/forms';
-import {map, startWith} from 'rxjs/operators';
-import {ExportService} from '../export.service';
-import {Commodity} from '../detail/detail.component';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { ExcelService } from '../excel.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
+import { ExportService } from '../export.service';
+import { Commodity } from '../detail/detail.component';
 
 export interface Fragancia {
-  id: number;
+  _id: any;
   Description: string;
   Cost: number;
   Price: number;
@@ -19,14 +25,14 @@ export interface Fragancia {
 enum Actions {
   DisplayFragancia = 0,
   PrintFragancia = 1,
-  ExportFragancia = 2
+  ExportFragancia = 2,
 }
 
 function search(text: string, f: Fragancia[]): Fragancia[] {
   if (text === '') {
     return f;
   }
-  return f.filter(v => {
+  return f.filter((v) => {
     const term = text.toLowerCase();
     return v.Description.toLowerCase().includes(term);
   });
@@ -35,7 +41,7 @@ function search(text: string, f: Fragancia[]): Fragancia[] {
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
   perfumes: Fragancia[];
@@ -47,30 +53,46 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
+  @ViewChild('TABLE', { static: false }) tableToExport: ElementRef;
 
   constructor(
     private excelService: ExcelService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
-    private exportService: ExportService) {
-  }
+    private exportService: ExportService
+  ) {}
 
   ngOnInit(): void {
     this.excelService.readData();
-    this.excelService.gotFragancias.subscribe(values => {
+    this.excelService.gotFragancias.subscribe((values) => {
       this.perfumes = values;
-      console.log(values);
       this.perfumes$ = this.filter.valueChanges.pipe(
         startWith(''),
-        map(text => search(text, this.perfumes))
+        map((text) => search(text, this.perfumes)),
       );
       this.cdr.detectChanges();
+
+      this.perfumes$.subscribe((values) => {
+        return values.forEach((v) => {
+          v.Components.forEach((val) => this.excelService.ComponentById(val._id));
+          this.excelService.Commodity$.subscribe((c) => {
+            v.Components.forEach((val) => {
+              if (val._id === c._id) {
+                console.log(`val: ${val}`);
+                val = Object.assign({}, val, c);
+              }
+            });
+          });
+        });
+      });
     });
   }
 
   open(content, size: string = 'xl') {
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size});
+    this.modalService.open(content, {
+      ariaLabelledBy: 'modal-basic-title',
+      size,
+    });
   }
 
   close(content) {
@@ -92,7 +114,7 @@ export class HomeComponent implements OnInit {
     switch (action) {
       case Actions.DisplayFragancia:
         this.totalQuantity = 0;
-        p.Components.forEach(value => {
+        p.Components.forEach((value) => {
           this.totalQuantity += value.Quantity;
         });
         this.trigger.nativeElement.click();
@@ -105,14 +127,17 @@ export class HomeComponent implements OnInit {
 
   updateTotalQuantity() {
     this.totalQuantity = 0;
-    this.fragancia.Components.forEach(value => {
+    this.fragancia.Components.forEach((value) => {
       this.totalQuantity += value.Quantity;
     });
   }
 
   exportTOExcel() {
     this.action = Actions.ExportFragancia;
-    this.exportService.exportExcel(this.fragancia.Components, this.fragancia.Description);
+    this.exportService.exportExcel(
+      this.fragancia.Components,
+      this.fragancia.Description
+    );
     this.action = -1;
   }
 }

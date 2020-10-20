@@ -1,82 +1,90 @@
-import {Injectable, Component} from '@angular/core';
-import {remote, ipcRenderer} from 'electron';
-import {Fragancia} from './home/home.component';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {Commodity} from './detail/detail.component';
+import { Injectable, Component } from '@angular/core';
+import { remote, ipcRenderer } from 'electron';
+import { Fragancia } from './home/home.component';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Commodity } from './detail/detail.component';
 
 
-const readCommodities = 'getCommodities';
-const saveCommodities = 'saveCommodities';
-const readFragancias = 'getFragancias';
-const saveFragancias = 'saveChanges';
-
+export enum AppEvents {
+  ReadCommodities = 'getCommodities',
+  SaveCommodity = 'saveCommodity',
+  ReadFragancias = 'getFragancias',
+  SaveFragancias = 'saveChanges',
+  CommodityById = "commodityById"
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExcelService {
+
   private basepath: string;
   private fraganciasSubject: BehaviorSubject<Fragancia[]>;
   public gotFragancias: Observable<Fragancia[]>;
-  private commoditySubject: BehaviorSubject<Commodity[]>;
+  private commoditiesSubject: BehaviorSubject<Commodity[]>;
   gotCommodities: Observable<Commodity[]>;
+  Commodity$: Observable<Commodity>;
+  CommoditySubj: BehaviorSubject<Commodity>;
 
   constructor() {
     this.basepath = remote.app.getAppPath();
     this.fraganciasSubject = new BehaviorSubject<Fragancia[]>([]);
     this.gotFragancias = this.fraganciasSubject.asObservable();
-    this.commoditySubject = new BehaviorSubject<Commodity[]>([]);
-    this.gotCommodities = this.commoditySubject.asObservable();
+    this.commoditiesSubject = new BehaviorSubject<Commodity[]>([]);
+    this.gotCommodities = this.commoditiesSubject.asObservable();
+    this.CommoditySubj = new BehaviorSubject<Commodity>(null);
+    this.Commodity$ = this.CommoditySubj.asObservable();
 
-    ipcRenderer.on(readFragancias, (event, f) => {
+    ipcRenderer.on(AppEvents.ReadFragancias, (event, f) => {
+      if (!f) {
+        f = [];
+      }
+      const res = f as Fragancia[];
+      res.forEach(value => {
+        value.totalQuantity = value.Components.reduce((prev, cur) => prev + cur.Quantity, 0);
+      });
       this.fraganciasSubject.next(f);
     });
 
-    ipcRenderer.on(saveFragancias, (event, args) => {
-      if (args instanceof Error) {
-        // Gets an error
-        // TODO: show a modal
-        console.error(args);
-      } else {
-        const fragancia = args as Fragancia;
-        this.fraganciasSubject.next(
-          this.fraganciasSubject.value.map(value => value.Description === fragancia.Description ? fragancia : value)
-        );
-      }
-      console.log('Changes saved successfully');
+    ipcRenderer.on(AppEvents.SaveFragancias, (event, args) => {
+      const fragancia = args as Fragancia;
+      this.fraganciasSubject.next(
+        this.fraganciasSubject.value.map((value) =>
+          value.Description === fragancia.Description ? fragancia : value
+        )
+      );
     });
 
-    ipcRenderer.on(readCommodities, (event, args) => {
-      this.commoditySubject.next(args);
+    ipcRenderer.on(AppEvents.ReadCommodities, (event, args) => {
+      this.commoditiesSubject.next(args);
     });
 
-    ipcRenderer.on(saveCommodities, (event, args) => {
-      if (args instanceof Error) {
-        // TODO: show modal.
-        console.error(args);
-      } else {
-        const commodity = args as Commodity;
-        this.commoditySubject.next(
-          this.commoditySubject.value.map(value => value.Description === commodity.Description ? commodity : value)
-        );
-      }
+    ipcRenderer.on(AppEvents.SaveCommodity, (event, args) => {
+      const commodity = args as Commodity;
+      this.commoditiesSubject.next(
+        this.commoditiesSubject.value.map((value) =>
+          value.Description === commodity.Description ? commodity : value
+        )
+      );
     });
   }
 
+  ComponentById(_id: any): void {
+    ipcRenderer.send(AppEvents.CommodityById, _id);
+  }
   readData() {
-    ipcRenderer.send(readFragancias, {});
+    ipcRenderer.send(AppEvents.ReadFragancias, {});
   }
 
   saveChanges(fragancia: Fragancia) {
-    ipcRenderer.send(saveFragancias, fragancia);
+    ipcRenderer.send(AppEvents.SaveFragancias, fragancia);
   }
 
   readCommodities() {
-    ipcRenderer.send(readCommodities, {});
+    ipcRenderer.send(AppEvents.ReadCommodities, {});
   }
 
   saveCommodity(commodity: Commodity) {
-    ipcRenderer.send(saveCommodities, commodity);
+    ipcRenderer.send(AppEvents.SaveCommodity, commodity);
   }
 }
-
