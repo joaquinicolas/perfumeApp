@@ -8,6 +8,7 @@ const path = require("path");
 const api_1 = require("./api");
 const fs = require("fs");
 const Datastore = require("nedb");
+const excel_1 = require("./excel");
 var AppEvents;
 (function (AppEvents) {
     AppEvents["ReadCommodities"] = "getCommodities";
@@ -15,7 +16,18 @@ var AppEvents;
     AppEvents["ReadFragancias"] = "getFragancias";
     AppEvents["SaveFragancias"] = "saveChanges";
     AppEvents["CommodityById"] = "commodityById";
+    AppEvents["UploadFile"] = "uploadFile";
 })(AppEvents = exports.AppEvents || (exports.AppEvents = {}));
+var FileStatus;
+(function (FileStatus) {
+    FileStatus[FileStatus["Ok"] = 0] = "Ok";
+    FileStatus[FileStatus["Error"] = 1] = "Error";
+})(FileStatus = exports.FileStatus || (exports.FileStatus = {}));
+var FileStatusMessages;
+(function (FileStatusMessages) {
+    FileStatusMessages["Ok"] = "Materias primas almacenadas exitosamente";
+    FileStatusMessages["Error"] = "Material primas no pudieron ser almacenadas";
+})(FileStatusMessages || (FileStatusMessages = {}));
 const fraganciasFolder = 'fragancias';
 let dbPath = path.resolve(userHome(), fraganciasFolder);
 let win;
@@ -33,7 +45,6 @@ function createWindow() {
         protocol: 'file:',
         slashes: true,
     }));
-    win.webContents.openDevTools();
     win.on('closed', () => {
         win = null;
     });
@@ -49,6 +60,33 @@ electron_1.app.on('activate', () => {
         createWindow();
     }
 });
+electron_1.ipcMain.on(AppEvents.UploadFile, (event) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const res = yield electron_1.dialog.showOpenDialog(win, {
+        properties: ['openFile'],
+        filters: [{ name: 'Custom File Type', extensions: ['xlsx', 'xls'] }],
+    });
+    if (res.canceled) {
+        win.webContents.send(AppEvents.UploadFile, '');
+    }
+    else {
+        try {
+            const store = new Store();
+            const api = new api_1.API(store);
+            const spreadsheetAPI = new excel_1.Spreadsheet();
+            spreadsheetAPI.readCommoditiesFile(res.filePaths[0]).subscribe((val) => api.saveCommodity(val), (err) => {
+                showErrorDialog(err);
+                win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+            }, () => {
+                showMessageBox(FileStatusMessages.Ok);
+                win.webContents.send(AppEvents.UploadFile, FileStatus.Ok);
+            });
+        }
+        catch (err) {
+            showErrorDialog(err);
+            win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+        }
+    }
+}));
 electron_1.ipcMain.on(AppEvents.ReadFragancias, () => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     const store = new Store();
     const api = new api_1.API(store);
@@ -64,6 +102,7 @@ electron_1.ipcMain.on(AppEvents.SaveFragancias, (event, args) => tslib_1.__await
     const api = new api_1.API(new Store());
     try {
         let newFrag = yield api.saveFragancia(args);
+        showMessageBox('Fragancia almacenada exitosamente');
         win.webContents.send(AppEvents.SaveFragancias);
     }
     catch (e) {
@@ -119,6 +158,7 @@ class Store {
         }
         catch (error) {
             showErrorDialog(error);
+            throw error;
         }
         Store.instance = this;
         return this;
@@ -127,7 +167,18 @@ class Store {
 exports.Store = Store;
 function showErrorDialog(msg) {
     const title = 'Ocurrio un error';
-    electron_1.dialog.showErrorBox(title, msg);
+    return electron_1.dialog.showErrorBox(title, msg.toString());
+}
+function showMessageBox(message) {
+    const title = 'Accion exitosa';
+    const type = 'info';
+    const buttons = ['Entiendo'];
+    return electron_1.dialog.showMessageBox(win, {
+        title,
+        message,
+        type,
+        buttons,
+    });
 }
 function userHome() {
     const linuxHome = 'HOME';

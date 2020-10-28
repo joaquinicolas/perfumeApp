@@ -5,13 +5,13 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ExcelService } from '../excel.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { map, startWith } from 'rxjs/operators';
-import { ExportService } from '../export.service';
-import { Commodity } from '../detail/detail.component';
+import {ExcelService} from '../excel.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {merge, Observable, Subject} from 'rxjs';
+import {FormControl} from '@angular/forms';
+import {map, mapTo, startWith, tap} from 'rxjs/operators';
+import {ExportService} from '../export.service';
+import {Commodity} from '../detail/detail.component';
 
 export interface Fragancia {
   _id: any;
@@ -44,7 +44,6 @@ function search(text: string, f: Fragancia[]): Fragancia[] {
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
-  perfumes: Fragancia[];
   fragancia: Fragancia;
   action: Actions;
   perfumes$: Observable<Fragancia[]>;
@@ -53,38 +52,75 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('TABLE', { static: false }) tableToExport: ElementRef;
+  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
 
   constructor(
     private excelService: ExcelService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private exportService: ExportService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.excelService.readData();
     this.excelService.gotFragancias.subscribe((values) => {
-      this.perfumes = values;
-      this.perfumes$ = this.filter.valueChanges.pipe(
-        startWith(''),
-        map((text) => search(text, this.perfumes)),
-      );
-      this.cdr.detectChanges();
+      const fragancias = values.map(v => ({
+        _id: v._id,
+        Description: v.Description,
+        Cost: v.Cost,
+        Price: v.Price,
+        Components: v.Components.map(c => ({
+          _id: c._id,
+          Cost: c.Cost,
+          Quantity: c.Quantity,
+          Description: c.Description
+        })),
+        totalQuantity: v.totalQuantity,
+      }));
 
-      this.perfumes$.subscribe((values) => {
-        return values.forEach((v) => {
-          v.Components.forEach((val) => this.excelService.ComponentById(val._id));
-          this.excelService.Commodity$.subscribe((c) => {
-            v.Components.forEach((val) => {
-              if (val._id === c._id) {
-                console.log(`val: ${val}`);
-                val = Object.assign({}, val, c);
-              }
-            });
-          });
+      // Save ids for avoiding repeat requests.
+      const keys = {};
+      for (let i = 0; i < fragancias.length; i++) {
+        let element = fragancias[i];
+        element.Components.forEach((val) => {
+          if (!keys[val._id]) {
+            this.excelService.ComponentById(val._id);
+          }
         });
+      }
+
+      const filterByText$ = this.filter.valueChanges.pipe(
+        startWith(''),
+        map((text) => search(text, values)),
+      );
+
+      const updateFragancias = (commodity) => {
+        return values.map((v) => {
+          for (let i = 0; i < v.Components.length; i++) {
+            let element = v.Components[i];
+            if (element._id == commodity._id) {
+              v.Components[i] = Object.assign({}, element, commodity);
+            }
+          }
+          return v;
+        })
+      }
+
+      const updateFragancias$ = this.excelService.Commodity$.pipe(
+        map((c) => updateFragancias(c))
+      );
+
+      this.perfumes$ = merge(
+        updateFragancias$,
+        filterByText$
+      );
+
+      this.perfumes$.subscribe(() => {
+        this.cdr.detectChanges();
       });
+
+
     });
   }
 
@@ -99,6 +135,12 @@ export class HomeComponent implements OnInit {
     this.modalService.dismissAll('Save changes');
     switch (this.action) {
       case Actions.DisplayFragancia:
+        // Update fragancia.Cost before updating.
+        this.fragancia.Cost = this.fragancia.Components.reduce(
+          (previousValue, currentValue) =>
+            previousValue + (currentValue.Quantity * currentValue.Cost), 0
+        );
+        this.fragancia.Price = this.fragancia.Cost * 2;
         this.excelService.saveChanges(this.fragancia);
         break;
       case Actions.PrintFragancia:

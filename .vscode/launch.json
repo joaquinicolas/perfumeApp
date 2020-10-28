@@ -17,7 +17,6 @@
       },
       {
           "name": "Electron: Renderer",
-          "preLaunchTask": "Build.All",
           "type": "chrome",
           "request": "attach",
           "port": 9223,

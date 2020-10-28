@@ -1,10 +1,11 @@
 import 'reflect-metadata';
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import {app, BrowserWindow, ipcMain, dialog} from 'electron';
 import * as url from 'url';
 import * as path from 'path';
-import { API } from './api';
+import {API} from './api';
 import * as fs from 'fs';
 import * as Datastore from 'nedb';
+import {Spreadsheet} from './excel';
 
 export enum AppEvents {
   ReadCommodities = 'getCommodities',
@@ -12,6 +13,17 @@ export enum AppEvents {
   ReadFragancias = 'getFragancias',
   SaveFragancias = 'saveChanges',
   CommodityById = 'commodityById',
+  UploadFile = 'uploadFile',
+}
+
+export enum FileStatus {
+  Ok,
+  Error,
+}
+
+enum FileStatusMessages {
+  Ok = 'Materias primas almacenadas exitosamente',
+  Error = 'Material primas no pudieron ser almacenadas'
 }
 
 const fraganciasFolder = 'fragancias';
@@ -36,7 +48,6 @@ function createWindow() {
     })
   );
 
-  win.webContents.openDevTools();
   win.on('closed', () => {
     win = null;
   });
@@ -54,6 +65,36 @@ app.on('activate', () => {
   }
 });
 
+ipcMain.on(AppEvents.UploadFile, async (event: any) => {
+  const res = await dialog.showOpenDialog(win, {
+    properties: ['openFile'],
+    filters: [{name: 'Custom File Type', extensions: ['xlsx', 'xls']}],
+  });
+
+  if (res.canceled) {
+    win.webContents.send(AppEvents.UploadFile, '');
+  } else {
+    try {
+      const store = new Store();
+      const api = new API(store);
+      const spreadsheetAPI = new Spreadsheet();
+      spreadsheetAPI.readCommoditiesFile(res.filePaths[0]).subscribe(
+        (val) => api.saveCommodity(val),
+        (err) => {
+          showErrorDialog(err);
+          win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+        },
+        () => {
+          showMessageBox(FileStatusMessages.Ok);
+          win.webContents.send(AppEvents.UploadFile, FileStatus.Ok)
+        }
+      );
+    } catch (err) {
+      showErrorDialog(err);
+      win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+    }
+  }
+});
 ipcMain.on(AppEvents.ReadFragancias, async () => {
   const store = new Store();
   const api = new API(store);
@@ -69,6 +110,7 @@ ipcMain.on(AppEvents.SaveFragancias, async (event, args) => {
   const api = new API(new Store());
   try {
     let newFrag = await api.saveFragancia(args);
+    showMessageBox('Fragancia almacenada exitosamente');
     win.webContents.send(AppEvents.SaveFragancias);
   } catch (e) {
     showErrorDialog(e);
@@ -112,6 +154,7 @@ export class Store {
     commodities: Nedb<any>;
   };
   static instance: Store;
+
   constructor() {
     if (typeof Store.instance === 'object') {
       return Store.instance;
@@ -129,6 +172,7 @@ export class Store {
       this.db.commodities.loadDatabase();
     } catch (error) {
       showErrorDialog(error);
+      throw error;
     }
     Store.instance = this;
     return this;
@@ -137,7 +181,20 @@ export class Store {
 
 function showErrorDialog(msg: string) {
   const title = 'Ocurrio un error';
-  dialog.showErrorBox(title, msg);
+  return dialog.showErrorBox(title, msg.toString());
+}
+
+function showMessageBox(message: string): Promise<Electron.MessageBoxReturnValue> {
+  const title = 'Accion exitosa';
+  const type = 'info';
+  const buttons = ['Entiendo'];
+
+  return dialog.showMessageBox(win, {
+    title,
+    message,
+    type,
+    buttons,
+  });
 }
 
 function userHome(): string {

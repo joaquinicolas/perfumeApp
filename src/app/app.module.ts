@@ -14,6 +14,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MoneyPipe } from './money.pipe';
 import { VowelsPipe } from './vowels.pipe';
 import { FraganciaFormComponent } from './fragancia-form/fragancia-form.component';
+import { CommoditiesFormComponent } from './commodities-form/commodities-form.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { FraganciaFormComponent } from './fragancia-form/fragancia-form.componen
     DetailComponent,
     MoneyPipe,
     VowelsPipe,
-    FraganciaFormComponent
+    FraganciaFormComponent,
+    CommoditiesFormComponent
   ],
     imports: [
         BrowserModule,

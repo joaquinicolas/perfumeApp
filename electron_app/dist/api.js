@@ -35,15 +35,15 @@ class API {
         });
     }
     getCommodities() {
-        let result;
-        this.store.db.commodities.find({}, (err, docs) => {
-            if (err) {
-                result = Promise.reject(err);
-                return;
-            }
-            result = Promise.resolve(docs);
+        return new Promise((resolve, reject) => {
+            this.store.db.commodities.find({}, (err, docs) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(docs);
+            });
         });
-        return result;
     }
     saveCommodity(commodity) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -60,19 +60,25 @@ class API {
     }
     saveFragancia(fragancia) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let result;
-            fragancia.Components = fragancia.Components.map((v) => {
-                v.Commodity = null;
-                return v;
-            });
-            this.store.db.fragancias.insert(fragancia, (err, newDoc) => {
-                if (err) {
-                    result = Promise.reject(err);
-                    return;
+            return new Promise((resolve, reject) => {
+                fragancia.Components = fragancia.Components.map((v) => {
+                    return {
+                        _id: v._id,
+                        Commodity: null,
+                        Quantity: v.Quantity,
+                    };
+                });
+                if (fragancia._id == null) {
+                    delete fragancia._id;
                 }
-                result = Promise.resolve(newDoc);
+                this.store.db.fragancias.update({ _id: fragancia._id }, fragancia, { upsert: true }, (err, numUpdated, upsert) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(fragancia);
+                });
             });
-            return result;
         });
     }
 }

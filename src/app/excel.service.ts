@@ -3,25 +3,30 @@ import { remote, ipcRenderer } from 'electron';
 import { Fragancia } from './home/home.component';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Commodity } from './detail/detail.component';
-
+import { map } from 'rxjs/operators';
 
 export enum AppEvents {
   ReadCommodities = 'getCommodities',
   SaveCommodity = 'saveCommodity',
   ReadFragancias = 'getFragancias',
   SaveFragancias = 'saveChanges',
-  CommodityById = "commodityById"
+  CommodityById = 'commodityById',
+  UploadFile = 'uploadFile',
+}
+
+export enum FileStatus {
+  Ok,
+  Error,
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExcelService {
-
-  private basepath: string;
-  private fraganciasSubject: BehaviorSubject<Fragancia[]>;
-  public gotFragancias: Observable<Fragancia[]>;
-  private commoditiesSubject: BehaviorSubject<Commodity[]>;
+  basepath: string;
+  fraganciasSubject: BehaviorSubject<Fragancia[]>;
+  gotFragancias: Observable<Fragancia[]>;
+  commoditiesSubject: BehaviorSubject<Commodity[]>;
   gotCommodities: Observable<Commodity[]>;
   Commodity$: Observable<Commodity>;
   CommoditySubj: BehaviorSubject<Commodity>;
@@ -34,25 +39,18 @@ export class ExcelService {
     this.gotCommodities = this.commoditiesSubject.asObservable();
     this.CommoditySubj = new BehaviorSubject<Commodity>(null);
     this.Commodity$ = this.CommoditySubj.asObservable();
-
     ipcRenderer.on(AppEvents.ReadFragancias, (event, f) => {
       if (!f) {
         f = [];
       }
       const res = f as Fragancia[];
-      res.forEach(value => {
-        value.totalQuantity = value.Components.reduce((prev, cur) => prev + cur.Quantity, 0);
+      res.forEach((value) => {
+        value.totalQuantity = value.Components.reduce(
+          (prev, cur) => prev + cur.Quantity,
+          0
+        );
       });
       this.fraganciasSubject.next(f);
-    });
-
-    ipcRenderer.on(AppEvents.SaveFragancias, (event, args) => {
-      const fragancia = args as Fragancia;
-      this.fraganciasSubject.next(
-        this.fraganciasSubject.value.map((value) =>
-          value.Description === fragancia.Description ? fragancia : value
-        )
-      );
     });
 
     ipcRenderer.on(AppEvents.ReadCommodities, (event, args) => {
@@ -66,6 +64,11 @@ export class ExcelService {
           value.Description === commodity.Description ? commodity : value
         )
       );
+    });
+
+    ipcRenderer.on(AppEvents.CommodityById, (event, args) => {
+      const commodity = args as Commodity;
+      this.CommoditySubj.next(commodity);
     });
   }
 
@@ -86,5 +89,9 @@ export class ExcelService {
 
   saveCommodity(commodity: Commodity) {
     ipcRenderer.send(AppEvents.SaveCommodity, commodity);
+  }
+
+  uploadFile() {
+    ipcRenderer.send(AppEvents.UploadFile);
   }
 }
