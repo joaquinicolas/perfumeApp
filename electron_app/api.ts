@@ -25,7 +25,6 @@ export class API {
     return new Promise((resolve, reject) => {
       this.store.db.fragancias.find({}, (err, docs) => {
         if (err) reject(err);
-
         resolve(docs);
       });
     });
@@ -55,15 +54,49 @@ export class API {
   }
 
   public async saveCommodity(commodity: Commodity): Promise<Commodity> {
-    let result: Promise<Commodity>;
-    this.store.db.commodities.insert(commodity, (err, doc) => {
-      if (err) {
-        result = Promise.reject(err);
-        return;
-      }
-      result = Promise.resolve(doc);
+    return new Promise((resolve, reject) => {
+      this.store.db.commodities.update(
+        {_id: commodity._id},
+        commodity,
+        {upsert: true},
+        (err, numUpdated, upsert) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(commodity);
+        });
     });
-    return result;
+
+  }
+
+  public async updateFraganciaByCommodity(c: Commodity): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.store.db.fragancias
+        .find({"Components._id": c._id}, async (err, docs) => {
+          if (err)
+            return reject(err);
+
+          for (let i = 0; i < docs.length; i++) {
+            const element = docs[i] as Fragancia;
+            element.Cost = element.Components.reduce(
+              (prev, curr) => prev + (curr.Quantity * c.Cost),
+              0);
+
+            element.Price = element.Cost * 2;
+            docs[i] = element;
+
+            try {
+              await this.saveFragancia(element);
+            } catch (e) {
+              reject(e);
+              return;
+            }
+          }
+
+          resolve();
+        });
+    });
   }
 
   public async saveFragancia(fragancia: Fragancia): Promise<any> {

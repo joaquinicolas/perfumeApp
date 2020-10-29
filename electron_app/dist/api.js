@@ -47,15 +47,40 @@ class API {
     }
     saveCommodity(commodity) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let result;
-            this.store.db.commodities.insert(commodity, (err, doc) => {
-                if (err) {
-                    result = Promise.reject(err);
-                    return;
-                }
-                result = Promise.resolve(doc);
+            return new Promise((resolve, reject) => {
+                this.store.db.commodities.update({ _id: commodity._id }, commodity, { upsert: true }, (err, numUpdated, upsert) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(commodity);
+                });
             });
-            return result;
+        });
+    }
+    updateFraganciaByCommodity(c) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                this.store.db.fragancias
+                    .find({ "Components._id": c._id }, (err, docs) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                    if (err)
+                        return reject(err);
+                    for (let i = 0; i < docs.length; i++) {
+                        const element = docs[i];
+                        element.Cost = element.Components.reduce((prev, curr) => prev + (curr.Quantity * c.Cost), 0);
+                        element.Price = element.Cost * 2;
+                        docs[i] = element;
+                        try {
+                            yield this.saveFragancia(element);
+                        }
+                        catch (e) {
+                            reject(e);
+                            return;
+                        }
+                    }
+                    resolve();
+                }));
+            });
         });
     }
     saveFragancia(fragancia) {
