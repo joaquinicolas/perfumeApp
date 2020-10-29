@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {ExcelService} from '../excel.service';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {merge, Observable, Subject} from 'rxjs';
 import {FormControl} from '@angular/forms';
 import {map, mapTo, startWith, tap} from 'rxjs/operators';
@@ -58,8 +58,12 @@ export class HomeComponent implements OnInit {
     private excelService: ExcelService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
-    private exportService: ExportService
+    private exportService: ExportService,
+    config: NgbModalConfig,
   ) {
+
+    config.backdrop = 'static';
+    config.keyboard = false;
   }
 
   ngOnInit(): void {
