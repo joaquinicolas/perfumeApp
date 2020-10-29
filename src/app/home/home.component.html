@@ -125,7 +125,7 @@
       <tbody>
       <tr *ngFor="let c of fragancia.Components">
         <td>
-          {{c.Description | vowels}}
+          {{c.Description}}
         </td>
         <td>
           <input type="number" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
