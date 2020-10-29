@@ -131,9 +131,7 @@ ipcMain.on(AppEvents.SaveCommodity, async (event, args) => {
   const api = new API(new Store());
   try {
     let newComm = await api.saveCommodity(args);
-    if (args._id) {
-      await api.updateFraganciaByCommodity(newComm);
-    }
+    showMessageBox('Operacion exitosa');
     win.webContents.send(AppEvents.SaveCommodity, newComm);
   } catch (e) {
     showErrorDialog(e);

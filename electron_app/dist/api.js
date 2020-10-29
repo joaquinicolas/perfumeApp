@@ -58,31 +58,6 @@ class API {
             });
         });
     }
-    updateFraganciaByCommodity(c) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                this.store.db.fragancias
-                    .find({ "Components._id": c._id }, (err, docs) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    if (err)
-                        return reject(err);
-                    for (let i = 0; i < docs.length; i++) {
-                        const element = docs[i];
-                        element.Cost = element.Components.reduce((prev, curr) => prev + (curr.Quantity * c.Cost), 0);
-                        element.Price = element.Cost * 2;
-                        docs[i] = element;
-                        try {
-                            yield this.saveFragancia(element);
-                        }
-                        catch (e) {
-                            reject(e);
-                            return;
-                        }
-                    }
-                    resolve();
-                }));
-            });
-        });
-    }
     saveFragancia(fragancia) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
@@ -95,6 +70,12 @@ class API {
                 });
                 if (fragancia._id == null) {
                     delete fragancia._id;
+                }
+                if (fragancia.Price != null) {
+                    delete fragancia.Price;
+                }
+                if (fragancia.Cost != null) {
+                    delete fragancia.Cost;
                 }
                 this.store.db.fragancias.update({ _id: fragancia._id }, fragancia, { upsert: true }, (err, numUpdated, upsert) => {
                     if (err) {

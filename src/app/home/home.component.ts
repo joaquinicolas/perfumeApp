@@ -44,6 +44,7 @@ function search(text: string, f: Fragancia[]): Fragancia[] {
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  fakeName: string;
   fragancia: Fragancia;
   action: Actions;
   perfumes$: Observable<Fragancia[]>;
@@ -72,8 +73,8 @@ export class HomeComponent implements OnInit {
       const fragancias = values.map(v => ({
         _id: v._id,
         Description: v.Description,
-        Cost: v.Cost,
-        Price: v.Price,
+        Cost: 0.00,
+        Price: 0.00,
         Components: v.Components.map(c => ({
           _id: c._id,
           Cost: c.Cost,
@@ -101,12 +102,16 @@ export class HomeComponent implements OnInit {
 
       const updateFragancias = (commodity) => {
         return values.map((v) => {
+          let cost = 0.00;
           for (let i = 0; i < v.Components.length; i++) {
             let element = v.Components[i];
             if (element._id == commodity._id) {
               v.Components[i] = Object.assign({}, element, commodity);
             }
+            cost += v.Components[i].Cost * v.Components[i].Quantity;
           }
+          v.Cost = cost;
+          v.Price = cost * 2;
           return v;
         })
       }

@@ -11,7 +11,14 @@
     "e2e": "ng e2e",
     "start:electron": "electron . --remote-debugging-port=9223",
     "start:electron-main": "electron --inspect=5858 .",
-    "postinstall": "electron-builder install-app-deps"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.joaquinno.fragancias",
+    "win": {
+      "target": "nsis"
+    }
   },
   "private": true,
   "dependencies": {

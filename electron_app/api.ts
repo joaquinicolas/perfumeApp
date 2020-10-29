@@ -70,35 +70,6 @@ export class API {
 
   }
 
-  public async updateFraganciaByCommodity(c: Commodity): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.store.db.fragancias
-        .find({"Components._id": c._id}, async (err, docs) => {
-          if (err)
-            return reject(err);
-
-          for (let i = 0; i < docs.length; i++) {
-            const element = docs[i] as Fragancia;
-            element.Cost = element.Components.reduce(
-              (prev, curr) => prev + (curr.Quantity * c.Cost),
-              0);
-
-            element.Price = element.Cost * 2;
-            docs[i] = element;
-
-            try {
-              await this.saveFragancia(element);
-            } catch (e) {
-              reject(e);
-              return;
-            }
-          }
-
-          resolve();
-        });
-    });
-  }
-
   public async saveFragancia(fragancia: Fragancia): Promise<any> {
     return new Promise((resolve, reject) => {
       fragancia.Components = fragancia.Components.map((v) => {
@@ -110,6 +81,12 @@ export class API {
       });
       if (fragancia._id == null) {
         delete fragancia._id;
+      }
+      if (fragancia.Price != null) {
+        delete fragancia.Price;
+      }
+      if (fragancia.Cost != null) {
+        delete fragancia.Cost;
       }
       this.store.db.fragancias.update(
         {_id: fragancia._id},

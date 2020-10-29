@@ -1,5 +1,9 @@
 @media print{
   .doNotPrint{display:none !important;}
+  .no-border{
+    outline: none;
+    border: none;
+  }
 }
 
 @media screen {

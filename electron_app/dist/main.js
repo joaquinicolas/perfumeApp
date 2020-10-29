@@ -123,9 +123,7 @@ electron_1.ipcMain.on(AppEvents.SaveCommodity, (event, args) => tslib_1.__awaite
     const api = new api_1.API(new Store());
     try {
         let newComm = yield api.saveCommodity(args);
-        if (args._id) {
-            yield api.updateFraganciaByCommodity(newComm);
-        }
+        showMessageBox('Operacion exitosa');
         win.webContents.send(AppEvents.SaveCommodity, newComm);
     }
     catch (e) {
