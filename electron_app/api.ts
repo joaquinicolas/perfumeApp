@@ -72,33 +72,43 @@ export class API {
 
   public async saveFragancia(fragancia: Fragancia): Promise<any> {
     return new Promise((resolve, reject) => {
-      fragancia.Components = fragancia.Components.map((v) => {
-        return {
-          _id: v._id,
-          Commodity: null,
-          Quantity: v.Quantity,
-        };
-      });
-      if (fragancia._id == null) {
-        delete fragancia._id;
-      }
-      if (fragancia.Price != null) {
-        delete fragancia.Price;
-      }
-      if (fragancia.Cost != null) {
-        delete fragancia.Cost;
-      }
-      this.store.db.fragancias.update(
-        {_id: fragancia._id},
-        fragancia,
-        {upsert: true},
-        (err, numUpdated, upsert) => {
-          if (err) {
-            reject(err);
-            return;
+      const regex = new RegExp(`${fragancia.Description}`, 'gi');
+      this.store.db.fragancias.find({"Description": regex}, (err, docs) => {
+        if (!err && (!docs || docs.length == 0)) {
+          fragancia.Components = fragancia.Components.map((v) => {
+            return {
+              _id: v._id,
+              Commodity: null,
+              Quantity: v.Quantity,
+            };
+          });
+          if (fragancia._id == null) {
+            delete fragancia._id;
           }
-          resolve(fragancia);
-        });
+          if (fragancia.Price != null) {
+            delete fragancia.Price;
+          }
+          if (fragancia.Cost != null) {
+            delete fragancia.Cost;
+          }
+          this.store.db.fragancias.update(
+            {_id: fragancia._id},
+            fragancia,
+            {upsert: true},
+            (err, numUpdated, upsert) => {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(fragancia);
+            });
+        } else {
+          if (err)
+            return reject(err)
+          else
+            return reject(new Error('La fragancia ya existe'))
+        }
+      })
     });
   }
 }

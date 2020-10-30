@@ -1,1 +1,0 @@
-{"version":3,"file":"Commodity.js","sourceRoot":"","sources":["../../entity/Commodity.ts"],"names":[],"mappings":";;AAAA,MAAa,SAAS;CAKrB;AALD,8BAKC","sourcesContent":["export class Commodity {\n  public _id: any;\n  public Description: string;\n\n  public Cost: number;\n}\n"]}
