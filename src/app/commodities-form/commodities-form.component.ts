@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { remote, ipcRenderer } from 'electron';
-import { AppEvents, ExcelService, FileStatus } from '../excel.service';
+import {Component, OnInit} from '@angular/core';
+import {remote, ipcRenderer} from 'electron';
+import {AppEvents, ExcelService, FileStatus} from '../excel.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-commodities-form',
@@ -8,11 +9,15 @@ import { AppEvents, ExcelService, FileStatus } from '../excel.service';
   styleUrls: ['./commodities-form.component.css'],
 })
 export class CommoditiesFormComponent implements OnInit {
-  constructor(private excelService: ExcelService) {}
+  constructor(private excelService: ExcelService, private router: Router) {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   uploadFile() {
-    this.excelService.uploadFile();
+    this.excelService.uploadFile(() => {
+      this.router.navigate(['/']);
+    });
   }
 }

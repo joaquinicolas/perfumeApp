@@ -150,7 +150,7 @@ export class HomeComponent implements OnInit {
             previousValue + (currentValue.Quantity * currentValue.Cost), 0
         );
         this.fragancia.Price = this.fragancia.Cost * 2;
-        this.excelService.saveChanges(this.fragancia);
+        this.excelService.updateFragancia(this.fragancia);
         break;
       case Actions.PrintFragancia:
         window.print();

@@ -3,8 +3,8 @@ import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Fragancia} from "../home/home.component";
 import {FormControl} from "@angular/forms";
-import {map, startWith, switchMap, tap} from "rxjs/operators";
-import {combineLatest, concat, merge, Observable, of} from "rxjs";
+import {map, startWith, switchMap, tap, timeout} from "rxjs/operators";
+import {combineLatest, concat, interval, merge, Observable, of} from "rxjs";
 
 export interface Commodity {
   _id: any;
@@ -36,7 +36,8 @@ export class DetailComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
 
-  constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {}
+  constructor(private excelService: ExcelService, private cdr: ChangeDetectorRef, private modalService: NgbModal) {
+  }
 
   ngOnInit(): void {
     this.excelService.readCommodities();
@@ -47,7 +48,8 @@ export class DetailComponent implements OnInit {
       );
     this.commodities$ = combineLatest(
       this.excelService.gotCommodities,
-      filterByText
+      filterByText,
+      interval(1000)
     )
       .pipe(
         map(([commodities, text]) => search(text, commodities))
@@ -56,6 +58,7 @@ export class DetailComponent implements OnInit {
     this.commodities$.subscribe((res) => {
       this.cdr.detectChanges();
     });
+
   }
 
   open(content) {
@@ -64,7 +67,7 @@ export class DetailComponent implements OnInit {
 
   close(content) {
     this.modalService.dismissAll('Save changes');
-    this.excelService.saveCommodity(this.commodity);
+    this.excelService.updateCommodity(this.commodity);
   }
 
   viewCommodity(c: Commodity) {

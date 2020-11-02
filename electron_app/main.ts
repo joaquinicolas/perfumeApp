@@ -14,6 +14,8 @@ export enum AppEvents {
   SaveFragancias = 'saveChanges',
   CommodityById = 'commodityById',
   UploadFile = 'uploadFile',
+  UpdateFragancia = 'updateFragancia',
+  UpdateCommodity = 'updateCommodity'
 }
 
 export enum FileStatus {
@@ -76,17 +78,33 @@ ipcMain.on(AppEvents.UploadFile, async (event: any) => {
   } else {
     try {
       const store = new Store();
+      let show = true;
       const api = new API(store);
       const spreadsheetAPI = new Spreadsheet();
-      spreadsheetAPI.readCommoditiesFile(res.filePaths[0]).subscribe(
-        (val) => api.saveCommodity(val),
+      const source$ = spreadsheetAPI.readCommoditiesFile(res.filePaths[0]);
+      const suscription = source$.subscribe(
+        async (val) => {
+          try {
+            await api.saveCommodity(val);
+          } catch (e) {
+            show = false;
+           // showErrorDialog(e);
+           // suscription.unsubscribe();
+            win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+
+          }
+        },
         (err) => {
           showErrorDialog(err);
           win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
+          return
         },
         () => {
-          showMessageBox(FileStatusMessages.Ok);
-          win.webContents.send(AppEvents.UploadFile, FileStatus.Ok)
+          if (show) {
+            showMessageBox(FileStatusMessages.Ok);
+            win.webContents.send(AppEvents.UploadFile, FileStatus.Ok)
+          }
+
         }
       );
     } catch (err) {
@@ -106,11 +124,21 @@ ipcMain.on(AppEvents.ReadFragancias, async () => {
   }
 });
 
+ipcMain.on(AppEvents.UpdateFragancia, async (event, args) => {
+  const api = new API(new Store());
+  try {
+    let f = await api.updateFragancia(args);
+    await showMessageBox('Operacion exitosa');
+    win.webContents.send(AppEvents.UpdateFragancia);
+  } catch (e) {
+    showErrorDialog(e);
+  }
+});
 ipcMain.on(AppEvents.SaveFragancias, async (event, args) => {
   const api = new API(new Store());
   try {
     let newFrag = await api.saveFragancia(args);
-    showMessageBox('Fragancia almacenada exitosamente');
+    await showMessageBox('Fragancia almacenada exitosamente');
     win.webContents.send(AppEvents.SaveFragancias);
   } catch (e) {
     showErrorDialog(e);
@@ -127,11 +155,11 @@ ipcMain.on(AppEvents.ReadCommodities, async (event, args) => {
   }
 });
 
-ipcMain.on(AppEvents.SaveCommodity, async (event, args) => {
+ipcMain.on(AppEvents.UpdateCommodity, async (event, args) => {
   const api = new API(new Store());
   try {
-    let newComm = await api.saveCommodity(args);
-    showMessageBox('Operacion exitosa');
+    let newComm = await api.updateCommodity(args);
+    await showMessageBox('Operacion exitosa');
     win.webContents.send(AppEvents.SaveCommodity, newComm);
   } catch (e) {
     showErrorDialog(e);

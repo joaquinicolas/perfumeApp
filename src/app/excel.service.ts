@@ -1,9 +1,9 @@
-import { Injectable, Component } from '@angular/core';
-import { remote, ipcRenderer } from 'electron';
-import { Fragancia } from './home/home.component';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Commodity } from './detail/detail.component';
-import { map } from 'rxjs/operators';
+import {Injectable, Component} from '@angular/core';
+import {remote, ipcRenderer} from 'electron';
+import {Fragancia} from './home/home.component';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {Commodity} from './detail/detail.component';
+import {map} from 'rxjs/operators';
 
 export enum AppEvents {
   ReadCommodities = 'getCommodities',
@@ -12,6 +12,8 @@ export enum AppEvents {
   SaveFragancias = 'saveChanges',
   CommodityById = 'commodityById',
   UploadFile = 'uploadFile',
+  UpdateFragancia = 'updateFragancia',
+  UpdateCommodity = 'updateCommodity'
 }
 
 export enum FileStatus {
@@ -75,6 +77,7 @@ export class ExcelService {
   ComponentById(_id: any): void {
     ipcRenderer.send(AppEvents.CommodityById, _id);
   }
+
   readData() {
     ipcRenderer.send(AppEvents.ReadFragancias, {});
   }
@@ -87,11 +90,16 @@ export class ExcelService {
     ipcRenderer.send(AppEvents.ReadCommodities, {});
   }
 
-  saveCommodity(commodity: Commodity) {
-    ipcRenderer.send(AppEvents.SaveCommodity, commodity);
+  updateCommodity(commodity: Commodity) {
+    ipcRenderer.send(AppEvents.UpdateCommodity, commodity);
   }
 
-  uploadFile() {
+  uploadFile(cb: () => void) {
     ipcRenderer.send(AppEvents.UploadFile);
+    ipcRenderer.on(AppEvents.UploadFile, cb);
+  }
+
+  updateFragancia(f: Fragancia) {
+    ipcRenderer.send(AppEvents.UpdateFragancia, f);
   }
 }

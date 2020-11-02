@@ -55,6 +55,34 @@ export class API {
 
   public async saveCommodity(commodity: Commodity): Promise<Commodity> {
     return new Promise((resolve, reject) => {
+      const regex = new RegExp(`${commodity.Description}`, 'gi');
+      this.store.db.commodities.find({"Description": regex}, (err, docs) => {
+        if (!err && (!docs || docs.length == 0)) {
+          this.store.db.commodities.update(
+            {_id: commodity._id},
+            commodity,
+            {upsert: true},
+            (err, numUpdated, upsert) => {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(commodity);
+            });
+        }
+        else {
+          if (err)
+            return reject(err)
+          else
+            return reject(new Error('Materia prima ya existe'))
+        }
+      });
+    });
+
+  }
+
+  updateCommodity(commodity: Commodity): Promise<any> {
+    return new Promise((resolve, reject) => {
       this.store.db.commodities.update(
         {_id: commodity._id},
         commodity,
@@ -67,9 +95,41 @@ export class API {
           resolve(commodity);
         });
     });
-
   }
 
+  updateFragancia(fragancia: Fragancia): Promise<any> {
+    return new Promise((resolve, reject) => {
+      fragancia.Components = fragancia.Components.map((v) => {
+        return {
+          _id: v._id,
+          Commodity: null,
+          Quantity: v.Quantity,
+        };
+      });
+      if (fragancia._id == null) {
+        delete fragancia._id;
+      }
+      if (fragancia.Price != null) {
+        delete fragancia.Price;
+      }
+      if (fragancia.Cost != null) {
+        delete fragancia.Cost;
+      }
+      this.store.db.fragancias.update(
+        {_id: fragancia._id},
+        fragancia,
+        {upsert: false},
+        (err, numUpdated, upsert) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(fragancia);
+        });
+    });
+  }
+
+  // TODO: use insert instead of upsert.
   public async saveFragancia(fragancia: Fragancia): Promise<any> {
     return new Promise((resolve, reject) => {
       const regex = new RegExp(`${fragancia.Description}`, 'gi');
