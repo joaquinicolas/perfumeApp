@@ -151,16 +151,15 @@ export class API {
           if (fragancia.Cost != null) {
             delete fragancia.Cost;
           }
-          this.store.db.fragancias.update(
-            {_id: fragancia._id},
+          fragancia.Description = fragancia.Description.toUpperCase();
+          this.store.db.fragancias.insert(
             fragancia,
-            {upsert: true},
-            (err, numUpdated, upsert) => {
+            (err, doc) => {
               if (err) {
                 reject(err);
                 return;
               }
-              resolve(fragancia);
+              resolve(doc);
             });
         } else {
           if (err)
