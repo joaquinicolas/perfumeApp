@@ -25,7 +25,7 @@ export class API {
     return new Promise((resolve, reject) => {
       this.store.db.fragancias.find({}, (err, docs) => {
         if (err) reject(err);
-        resolve(docs);
+        resolve(docs.sort((a, b) => a.Description.localeCompare(b.Description)));
       });
     });
   }
