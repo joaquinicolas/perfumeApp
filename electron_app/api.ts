@@ -48,7 +48,10 @@ export class API {
           return;
         }
 
-        resolve(docs);
+        const res = docs.sort((a, b) => {
+          return a.Description.localeCompare(b.Description);
+        });
+        resolve(res);
       });
     });
   }
@@ -69,8 +72,7 @@ export class API {
               }
               resolve(commodity);
             });
-        }
-        else {
+        } else {
           if (err)
             return reject(err)
           else
