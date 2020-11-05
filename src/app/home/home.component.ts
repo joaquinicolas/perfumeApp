@@ -54,8 +54,15 @@ export class HomeComponent implements OnInit {
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
   @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
+
+  // This is for printing
   // quantity represents how many (kg) of a fragancia will be generated
   quantity = 1.00;
+  // name represents the employe's name
+  name: string = "";
+  // If it's true secondary names will be printed else fragancia.Description is going to be printed.
+  isSecondaryChecked = false;
+  // End printing region
 
   constructor(
     private excelService: ExcelService,
@@ -143,7 +150,10 @@ export class HomeComponent implements OnInit {
   }
 
   close(content) {
-    this.modalService.dismissAll('Save changes');
+    this.modalService.dismissAll('');
+    // clean up printing modal
+    this.quantity = 1.00;
+    this.name = '';
     switch (this.action) {
       case Actions.DisplayFragancia:
         // Update fragancia.Cost before updating.

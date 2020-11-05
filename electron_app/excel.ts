@@ -1,5 +1,5 @@
-import { Commodity } from './entity/Commodity';
-import { Observable } from 'rxjs';
+import {Commodity} from './entity/Commodity';
+import {Observable} from 'rxjs';
 import * as Excel from 'exceljs';
 
 export class Spreadsheet {
@@ -14,6 +14,7 @@ export class Spreadsheet {
             commodity.Description = row.values[1];
             const cost = +row.getCell("B").result ? +row.getCell("B").result.toString() : +row.getCell('B').value;
             commodity.Cost = cost;
+            commodity.SecondaryName = row.getCell("C").toString().toUpperCase().trim();
             observer.next(commodity);
           }
         });

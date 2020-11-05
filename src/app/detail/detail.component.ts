@@ -7,6 +7,7 @@ import {map, startWith, switchMap, tap, timeout} from "rxjs/operators";
 import {combineLatest, concat, interval, merge, Observable, of} from "rxjs";
 
 export interface Commodity {
+  SecondaryName: string;
   _id: any;
   Cost: number;
   Quantity: number;
