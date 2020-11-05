@@ -115,6 +115,15 @@
     </button>
   </div>
   <div class="modal-body">
+    <div class="d-flex flex-row">
+      <div class="input-group mb-3">
+        <input type="number" class="no-border" [(ngModel)]="quantity" data-decimals="2" min="0" step="0.1"/>
+        <div class="input-group-append">
+          <span class="input-group-text">.00 KGs</span>
+        </div>
+      </div>
+
+    </div>
     <table class="table table-borderless">
       <thead>
       <tr>
@@ -129,10 +138,10 @@
           {{c.Description}}
         </td>
         <td>
-          <input type="text" class="no-border" [(ngModel)]="fakeName" />
+          <input type="text" class="no-border" [(ngModel)]="fakeName"/>
         </td>
         <td>
-          <input type="number" class="no-border" [(ngModel)]="c.Quantity" data-decimals="2" min="0" step="0.1"/>
+          {{c.Quantity * quantity}}
         </td>
       </tr>
       </tbody>

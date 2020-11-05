@@ -54,6 +54,8 @@ export class HomeComponent implements OnInit {
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
   @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
+  // quantity represents how many (kg) of a fragancia will be generated
+  quantity = 1.00;
 
   constructor(
     private excelService: ExcelService,
