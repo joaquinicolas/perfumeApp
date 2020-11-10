@@ -88,8 +88,8 @@ ipcMain.on(AppEvents.UploadFile, async (event: any) => {
             await api.saveCommodity(val);
           } catch (e) {
             show = false;
-           // showErrorDialog(e);
-           // suscription.unsubscribe();
+            // showErrorDialog(e);
+            // suscription.unsubscribe();
             win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
 
           }

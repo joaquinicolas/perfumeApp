@@ -149,10 +149,10 @@
       </thead>
       <tbody>
       <tr *ngFor="let c of fragancia.Components">
-        <td [ngClass]="isSecondaryChecked?'doNotPrint':''">
+        <td [hidden]="isSecondaryChecked">
           {{c.Description}}
         </td>
-        <td [ngClass]="isSecondaryChecked?'':'doNotPrint'">
+        <td [hidden]="!isSecondaryChecked">
           {{c.SecondaryName}}
         </td>
         <td>
