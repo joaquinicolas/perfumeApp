@@ -6,6 +6,10 @@
   </form>
   <div class="d-flex flex-grow-1 justify-content-end">
     <button type="button" class="btn btn-outline-dark" [routerLink]="'/upload_commodities'">Nuevo</button>
+    <button  class="btn btn-outline-dark"
+            (click)="downloadFile()">
+      Descargar archivo
+    </button>
   </div>
 </div>
 <div class="container-fluid" style="margin-top: 20px">
@@ -38,6 +42,7 @@
 <button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary" (click)="open(content)">
   Launch demo modal
 </button>
+
 
 <ng-template #content let-modal>
   <div class="modal-header">

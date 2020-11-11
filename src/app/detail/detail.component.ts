@@ -75,4 +75,8 @@ export class DetailComponent implements OnInit {
     this.commodity = c;
     this.trigger.nativeElement.click();
   }
+
+  downloadFile() {
+    this.excelService.downloadCommodities();
+  }
 }

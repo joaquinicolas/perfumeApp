@@ -1,6 +1,16 @@
 import {Commodity} from './entity/Commodity';
 import {Observable} from 'rxjs';
 import * as Excel from 'exceljs';
+import {CommoditiesFileName} from "./constant";
+import * as path from "path";
+import {stream, Workbook, Worksheet} from "exceljs";
+
+const CREATOR = 'Fragancias';
+
+export interface Column {
+  header: string
+  key: string
+}
 
 export class Spreadsheet {
   public readCommoditiesFile(path: string): Observable<Commodity> {
@@ -11,15 +21,61 @@ export class Spreadsheet {
         sheet.eachRow((row, number) => {
           if (row.hasValues && number > 1) {
             const commodity = new Commodity();
-            commodity.Description = row.values[1];
-            const cost = +row.getCell("B").result ? +row.getCell("B").result.toString() : +row.getCell('B').value;
+            commodity._id = row.getCell("A");
+            commodity.Description = row.values[2];
+            const cost = +row.getCell("C").result ? +row.getCell("C").result.toString() : +row.getCell('C').value;
             commodity.Cost = cost;
-            commodity.SecondaryName = row.getCell("C").toString().toUpperCase().trim();
+            commodity.SecondaryName = row.getCell("D").toString().toUpperCase().trim();
             observer.next(commodity);
           }
         });
         observer.complete();
       });
     });
+  }
+
+  public async newCommoditiesWorkbook(commodities: Commodity[], dbPath: string) {
+    const sheetName = 'SHEET_1';
+    let workbook = this.newWorkbook();
+    this.addWorksheet([sheetName], [workbook]);
+    let sheet = workbook.getWorksheet(sheetName);
+    this.addColumns([
+      {header: 'ID', key: 'id'},
+      {header: 'Descripcion', key: 'description'},
+      {header: 'Costo', key: 'cost'},
+      {header: 'Nombre secundario', key: 'secondaryName'},
+    ], [sheet]);
+
+    for (let i = 0; i < commodities.length; i++) {
+      const element = commodities[i];
+      sheet.addRow({
+        id: element._id,
+        description: element.Description,
+        cost: element.Cost,
+        secondaryName: element.SecondaryName
+      }, 'i');
+    }
+    await workbook.xlsx.writeFile(path.resolve(dbPath, CommoditiesFileName))
+  }
+
+  private addWorksheet(sheets: string[], workBook: Workbook[]) {
+    for (let i = 0; i < sheets.length; i++) {
+      const element = sheets[i];
+      const sheet = workBook[0].addWorksheet(element);
+      sheet.state = 'visible';
+    }
+  }
+
+  private addColumns(columns: Column[], worksheet: Worksheet[]) {
+    worksheet[0].columns = columns;
+    return worksheet;
+  }
+
+
+  // Return a workbook stream writer
+  private newWorkbook(): Excel.Workbook {
+    const workbook = new Excel.Workbook();
+
+    return workbook;
   }
 }

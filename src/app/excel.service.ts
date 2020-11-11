@@ -3,18 +3,7 @@ import {remote, ipcRenderer} from 'electron';
 import {Fragancia} from './home/home.component';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Commodity} from './detail/detail.component';
-import {map} from 'rxjs/operators';
 
-export enum AppEvents {
-  ReadCommodities = 'getCommodities',
-  SaveCommodity = 'saveCommodity',
-  ReadFragancias = 'getFragancias',
-  SaveFragancias = 'saveChanges',
-  CommodityById = 'commodityById',
-  UploadFile = 'uploadFile',
-  UpdateFragancia = 'updateFragancia',
-  UpdateCommodity = 'updateCommodity'
-}
 
 export enum FileStatus {
   Ok,
@@ -89,6 +78,9 @@ export class ExcelService {
   readCommodities() {
     ipcRenderer.send(AppEvents.ReadCommodities, {});
   }
+  downloadCommodities() {
+    ipcRenderer.send('downloadCommodities');
+  }
 
   updateCommodity(commodity: Commodity) {
     ipcRenderer.send(AppEvents.UpdateCommodity, commodity);
@@ -102,4 +94,16 @@ export class ExcelService {
   updateFragancia(f: Fragancia) {
     ipcRenderer.send(AppEvents.UpdateFragancia, f);
   }
+}
+
+export enum AppEvents {
+  ReadCommodities = 'getCommodities',
+  SaveCommodity = 'saveCommodity',
+  ReadFragancias = 'getFragancias',
+  SaveFragancias = 'saveChanges',
+  CommodityById = 'commodityById',
+  UploadFile = 'uploadFile',
+  UpdateFragancia = 'updateFragancia',
+  UpdateCommodity = 'updateCommodity',
+  DownloadCommodities = 'downloadCommodities'
 }

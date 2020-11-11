@@ -6,22 +6,8 @@ import {API} from './api';
 import * as fs from 'fs';
 import * as Datastore from 'nedb';
 import {Spreadsheet} from './excel';
-
-export enum AppEvents {
-  ReadCommodities = 'getCommodities',
-  SaveCommodity = 'saveCommodity',
-  ReadFragancias = 'getFragancias',
-  SaveFragancias = 'saveChanges',
-  CommodityById = 'commodityById',
-  UploadFile = 'uploadFile',
-  UpdateFragancia = 'updateFragancia',
-  UpdateCommodity = 'updateCommodity'
-}
-
-export enum FileStatus {
-  Ok,
-  Error,
-}
+import {AppEvents, FileStatus} from "./constant";
+import {create} from "domain";
 
 enum FileStatusMessages {
   Ok = 'Materias primas almacenadas exitosamente',
@@ -66,6 +52,7 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
 
 ipcMain.on(AppEvents.UploadFile, async (event: any) => {
   const res = await dialog.showOpenDialog(win, {
@@ -123,7 +110,19 @@ ipcMain.on(AppEvents.ReadFragancias, async () => {
     showErrorDialog(error);
   }
 });
-
+ipcMain.on(AppEvents.DownloadCommodities, async (event, args) => {
+  const store = new Store();
+  const api = new API(store);
+  try {
+    let commodities = await api.getCommodities();
+    const spreadsheet = new Spreadsheet();
+    await spreadsheet.newCommoditiesWorkbook(commodities, dbPath);
+    win.webContents.send(AppEvents.DownloadCommodities);
+    showMessageBox('Archivo almacenado exitosamente');
+  } catch (e) {
+    showErrorDialog(e);
+  }
+});
 ipcMain.on(AppEvents.UpdateFragancia, async (event, args) => {
   const api = new API(new Store());
   try {

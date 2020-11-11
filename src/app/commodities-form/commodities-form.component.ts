@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {remote, ipcRenderer} from 'electron';
-import {AppEvents, ExcelService, FileStatus} from '../excel.service';
+import {ExcelService} from '../excel.service';
 import {Router} from "@angular/router";
 
 @Component({
