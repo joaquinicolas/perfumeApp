@@ -1,9 +1,8 @@
-import {Fragancia, Fragancia_Commodity} from './entity/Fragancia';
-import {Commodity} from './entity/Commodity';
+import { Fragancia, Fragancia_Commodity } from './entity/Fragancia';
+import { Commodity } from './entity/Commodity';
 import * as Datastore from 'nedb';
-import {Store} from './main';
-import {Observable} from 'rxjs';
-
+import { Store } from './main';
+import { Observable } from 'rxjs';
 
 export class API {
   store: Store;
@@ -25,14 +24,16 @@ export class API {
     return new Promise((resolve, reject) => {
       this.store.db.fragancias.find({}, (err, docs) => {
         if (err) reject(err);
-        resolve(docs.sort((a, b) => a.Description.localeCompare(b.Description)));
+        resolve(
+          docs.sort((a, b) => a.Description.localeCompare(b.Description))
+        );
       });
     });
   }
 
   CommodityById(id: any): Observable<Commodity> {
     return new Observable((observer) => {
-      this.store.db.commodities.findOne({_id: id}, (err, doc) => {
+      this.store.db.commodities.findOne({ _id: id }, (err, doc) => {
         if (err) return observer.error(err);
         observer.next(doc);
         observer.complete();
@@ -58,44 +59,42 @@ export class API {
 
   public async saveCommodity(commodity: Commodity): Promise<Commodity> {
     return new Promise((resolve, reject) => {
-      const regex = new RegExp(`${commodity.Description}`, 'gi');
-      this.store.db.commodities.find({"Description": regex}, (err, docs) => {
-        if (!err && (!docs || docs.length == 0)) {
-          this.store.db.commodities.update(
-            {_id: commodity._id},
-            commodity,
-            {upsert: true},
-            (err, numUpdated, upsert) => {
-              if (err) {
-                reject(err);
-                return;
-              }
-              resolve(commodity);
-            });
-        } else {
-          if (err)
-            return reject(err)
-          else
-            return reject(new Error('Materia prima ya existe'))
-        }
-      });
-    });
-
-  }
-
-  updateCommodity(commodity: Commodity): Promise<any> {
-    return new Promise((resolve, reject) => {
+      let query = {};
+      if (typeof commodity._id === 'string' && commodity._id.length > 0)
+        query = { _id: commodity._id };
       this.store.db.commodities.update(
-        {_id: commodity._id},
-        commodity,
-        {upsert: true},
+        query,
+        {
+          Description: commodity.Description,
+          Cost: commodity.Cost,
+          SecondaryName: commodity.SecondaryName,
+        },
+        { upsert: true },
         (err, numUpdated, upsert) => {
           if (err) {
             reject(err);
             return;
           }
           resolve(commodity);
-        });
+        }
+      );
+    });
+  }
+
+  updateCommodity(commodity: Commodity): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.store.db.commodities.update(
+        { _id: commodity._id },
+        commodity,
+        { upsert: true },
+        (err, numUpdated, upsert) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(commodity);
+        }
+      );
     });
   }
 
@@ -118,16 +117,17 @@ export class API {
         delete fragancia.Cost;
       }
       this.store.db.fragancias.update(
-        {_id: fragancia._id},
+        { _id: fragancia._id },
         fragancia,
-        {upsert: false},
+        { upsert: false },
         (err, numUpdated, upsert) => {
           if (err) {
             reject(err);
             return;
           }
           resolve(fragancia);
-        });
+        }
+      );
     });
   }
 
@@ -135,7 +135,7 @@ export class API {
   public async saveFragancia(fragancia: Fragancia): Promise<any> {
     return new Promise((resolve, reject) => {
       const regex = new RegExp(`${fragancia.Description}`, 'gi');
-      this.store.db.fragancias.find({"Description": regex}, (err, docs) => {
+      this.store.db.fragancias.find({ Description: regex }, (err, docs) => {
         if (!err && (!docs || docs.length == 0)) {
           fragancia.Components = fragancia.Components.map((v) => {
             return {
@@ -154,22 +154,18 @@ export class API {
             delete fragancia.Cost;
           }
           fragancia.Description = fragancia.Description.toUpperCase();
-          this.store.db.fragancias.insert(
-            fragancia,
-            (err, doc) => {
-              if (err) {
-                reject(err);
-                return;
-              }
-              resolve(doc);
-            });
+          this.store.db.fragancias.insert(fragancia, (err, doc) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve(doc);
+          });
         } else {
-          if (err)
-            return reject(err)
-          else
-            return reject(new Error('La fragancia ya existe'))
+          if (err) return reject(err);
+          else return reject(new Error('La fragancia ya existe'));
         }
-      })
+      });
     });
   }
 }

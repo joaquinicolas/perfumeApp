@@ -21,7 +21,7 @@ export class Spreadsheet {
         sheet.eachRow((row, number) => {
           if (row.hasValues && number > 1) {
             const commodity = new Commodity();
-            commodity._id = row.getCell("A");
+            commodity._id = row.getCell("A").toString();
             commodity.Description = row.values[2];
             const cost = +row.getCell("C").result ? +row.getCell("C").result.toString() : +row.getCell('C').value;
             commodity.Cost = cost;
