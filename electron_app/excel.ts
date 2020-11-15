@@ -13,10 +13,11 @@ export interface Column {
 }
 
 export class Spreadsheet {
-  public readCommoditiesFile(path: string): Observable<Commodity> {
-    return new Observable((observer) => {
+  public readCommoditiesFile(path: string): Promise<Commodity[]> {
+    return new Promise((resolve, reject) => {
       const workbook = new Excel.Workbook();
       workbook.xlsx.readFile(path).then(() => {
+        const result = [];
         const sheet = workbook.getWorksheet(1);
         sheet.eachRow((row, number) => {
           if (row.hasValues && number > 1) {
@@ -26,10 +27,10 @@ export class Spreadsheet {
             const cost = +row.getCell("C").result ? +row.getCell("C").result.toString() : +row.getCell('C').value;
             commodity.Cost = cost;
             commodity.SecondaryName = row.getCell("D").toString().toUpperCase().trim();
-            observer.next(commodity);
+            result.push(commodity);
           }
         });
-        observer.complete();
+        resolve(result);
       });
     });
   }

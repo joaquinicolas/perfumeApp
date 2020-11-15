@@ -7,7 +7,8 @@ import * as fs from 'fs';
 import * as Datastore from 'nedb';
 import {Spreadsheet} from './excel';
 import {AppEvents, FileStatus} from "./constant";
-import {create} from "domain";
+import {combineAll, concat, concatAll, mapTo, mergeAll} from "rxjs/operators";
+import {from} from "rxjs";
 
 enum FileStatusMessages {
   Ok = 'Materias primas almacenadas exitosamente',
@@ -65,35 +66,14 @@ ipcMain.on(AppEvents.UploadFile, async (event: any) => {
   } else {
     try {
       const store = new Store();
-      let show = true;
       const api = new API(store);
       const spreadsheetAPI = new Spreadsheet();
-      const source$ = spreadsheetAPI.readCommoditiesFile(res.filePaths[0]);
-      const suscription = source$.subscribe(
-        async (val) => {
-          try {
-            await api.saveCommodity(val);
-          } catch (e) {
-            show = false;
-            // showErrorDialog(e);
-            // suscription.unsubscribe();
-            win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
-
-          }
-        },
-        (err) => {
-          showErrorDialog(err);
-          win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
-          return
-        },
-        () => {
-          if (show) {
-            showMessageBox(FileStatusMessages.Ok);
-            win.webContents.send(AppEvents.UploadFile, FileStatus.Ok)
-          }
-
-        }
-      );
+      const commodities = await spreadsheetAPI.readCommoditiesFile(res.filePaths[0]);
+      for (let i = 0; i < commodities.length; i++) {
+        const element = commodities[i];
+        await api.saveCommodity(element);
+      }
+      win.webContents.send(AppEvents.UploadFile, FileStatus.Ok);
     } catch (err) {
       showErrorDialog(err);
       win.webContents.send(AppEvents.UploadFile, FileStatus.Error);
