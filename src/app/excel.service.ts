@@ -1,14 +1,9 @@
-import {Injectable, Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {remote, ipcRenderer} from 'electron';
 import {Fragancia} from './home/home.component';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Commodity} from './detail/detail.component';
 
-
-export enum FileStatus {
-  Ok,
-  Error,
-}
 
 @Injectable({
   providedIn: 'root',
@@ -104,6 +99,5 @@ export enum AppEvents {
   CommodityById = 'commodityById',
   UploadFile = 'uploadFile',
   UpdateFragancia = 'updateFragancia',
-  UpdateCommodity = 'updateCommodity',
-  DownloadCommodities = 'downloadCommodities'
+  UpdateCommodity = 'updateCommodity'
 }

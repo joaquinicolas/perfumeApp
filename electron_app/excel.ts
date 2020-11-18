@@ -1,9 +1,8 @@
 import {Commodity} from './entity/Commodity';
-import {Observable} from 'rxjs';
 import * as Excel from 'exceljs';
 import {CommoditiesFileName} from "./constant";
 import * as path from "path";
-import {stream, Workbook, Worksheet} from "exceljs";
+import {Workbook, Worksheet} from "exceljs";
 
 const CREATOR = 'Fragancias';
 

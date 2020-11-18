@@ -5,13 +5,13 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {ExcelService} from '../excel.service';
-import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {merge, Observable, Subject} from 'rxjs';
-import {FormControl} from '@angular/forms';
-import {map, mapTo, startWith, tap} from 'rxjs/operators';
-import {ExportService} from '../export.service';
-import {Commodity} from '../detail/detail.component';
+import { ExcelService } from '../excel.service';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { merge, Observable} from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { map, startWith} from 'rxjs/operators';
+import { ExportService } from '../export.service';
+import { Commodity } from '../detail/detail.component';
 
 export interface Fragancia {
   _id: any;
@@ -53,42 +53,43 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
+  @ViewChild('TABLE', { static: false }) tableToExport: ElementRef;
 
   // This is for printing
   // quantity represents how many (kg) of a fragancia will be generated
-  quantity = 1.00;
+  quantity = 1.0;
   // name represents the employe's name
-  name: string = "";
+  name: string = '';
   // If it's true secondary names will be printed else fragancia.Description is going to be printed.
   isSecondaryChecked = false;
   // End printing region
+  todayDateTime = null;
 
   constructor(
     private excelService: ExcelService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private exportService: ExportService,
-    config: NgbModalConfig,
+    config: NgbModalConfig
   ) {
-
     config.backdrop = 'static';
     config.keyboard = false;
+    this.todayDateTime = new Date();
   }
 
   ngOnInit(): void {
     this.excelService.readData();
     this.excelService.gotFragancias.subscribe((values) => {
-      const fragancias = values.map(v => ({
+      const fragancias = values.map((v) => ({
         _id: v._id,
         Description: v.Description,
-        Cost: 0.00,
-        Price: 0.00,
-        Components: v.Components.map(c => ({
+        Cost: 0.0,
+        Price: 0.0,
+        Components: v.Components.map((c) => ({
           _id: c._id,
           Cost: c.Cost,
           Quantity: c.Quantity,
-          Description: c.Description
+          Description: c.Description,
         })),
         totalQuantity: v.totalQuantity,
       }));
@@ -106,12 +107,12 @@ export class HomeComponent implements OnInit {
 
       const filterByText$ = this.filter.valueChanges.pipe(
         startWith(''),
-        map((text) => search(text, values)),
+        map((text) => search(text, values))
       );
 
       const updateFragancias = (commodity) => {
         return values.map((v) => {
-          let cost = 0.00;
+          let cost = 0.0;
           for (let i = 0; i < v.Components.length; i++) {
             let element = v.Components[i];
             if (element._id == commodity._id) {
@@ -122,23 +123,18 @@ export class HomeComponent implements OnInit {
           v.Cost = cost;
           v.Price = cost * 2;
           return v;
-        })
-      }
+        });
+      };
 
       const updateFragancias$ = this.excelService.Commodity$.pipe(
         map((c) => updateFragancias(c))
       );
 
-      this.perfumes$ = merge(
-        updateFragancias$,
-        filterByText$
-      );
+      this.perfumes$ = merge(updateFragancias$, filterByText$);
 
       this.perfumes$.subscribe(() => {
         this.cdr.detectChanges();
       });
-
-
     });
   }
 
@@ -152,14 +148,15 @@ export class HomeComponent implements OnInit {
   close(content) {
     this.modalService.dismissAll('');
     // clean up printing modal
-    this.quantity = 1.00;
+    this.quantity = 1.0;
     this.name = '';
     switch (this.action) {
       case Actions.DisplayFragancia:
         // Update fragancia.Cost before updating.
         this.fragancia.Cost = this.fragancia.Components.reduce(
           (previousValue, currentValue) =>
-            previousValue + (currentValue.Quantity * currentValue.Cost), 0
+            previousValue + currentValue.Quantity * currentValue.Cost,
+          0
         );
         this.fragancia.Price = this.fragancia.Cost * 2;
         this.excelService.updateFragancia(this.fragancia);

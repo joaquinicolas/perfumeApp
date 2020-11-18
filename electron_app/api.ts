@@ -1,6 +1,5 @@
-import {Fragancia, Fragancia_Commodity} from './entity/Fragancia';
+import {Fragancia} from './entity/Fragancia';
 import {Commodity} from './entity/Commodity';
-import * as Datastore from 'nedb';
 import {Store} from './main';
 import {Observable} from 'rxjs';
 

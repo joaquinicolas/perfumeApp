@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +31,4 @@ export class AuthService {
     this.isLoggedInSubject.next(false);
   }
 
-  logout(): void {
-    this.isLoggedInSubject.next(false);
-  }
 }

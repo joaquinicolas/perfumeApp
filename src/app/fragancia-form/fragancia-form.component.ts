@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ExcelService } from '../excel.service';
 import {
   catchError,
@@ -90,7 +89,7 @@ export class FraganciaFormComponent implements OnInit {
         search(term, this.commodities).pipe(
           map((response) => response.map((value) => value.Description)),
           tap(() => (this.searchFailed = false)),
-          catchError(() => { 
+          catchError(() => {
             this.searchFailed = true;
             return of([]);
           })

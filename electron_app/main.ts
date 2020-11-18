@@ -7,8 +7,6 @@ import * as fs from 'fs';
 import * as Datastore from 'nedb';
 import {Spreadsheet} from './excel';
 import {AppEvents, FileStatus} from "./constant";
-import {combineAll, concat, concatAll, mapTo, mergeAll} from "rxjs/operators";
-import {from} from "rxjs";
 
 enum FileStatusMessages {
   Ok = 'Materias primas almacenadas exitosamente',

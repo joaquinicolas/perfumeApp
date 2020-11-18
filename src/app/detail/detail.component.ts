@@ -1,10 +1,9 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ExcelService} from '../excel.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Fragancia} from "../home/home.component";
 import {FormControl} from "@angular/forms";
-import {map, startWith, switchMap, tap, timeout} from "rxjs/operators";
-import {combineLatest, concat, interval, merge, Observable, of} from "rxjs";
+import {map, startWith} from "rxjs/operators";
+import {combineLatest, interval, Observable} from "rxjs";
 
 export interface Commodity {
   SecondaryName: string;
