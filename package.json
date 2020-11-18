@@ -18,6 +18,9 @@
     "appId": "com.joaquinno.fragancias",
     "win": {
       "target": "nsis"
+    },
+    "directories": {
+      "output": "release"
     }
   },
   "private": true,
