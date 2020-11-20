@@ -9,7 +9,11 @@
 <div class="form-row">
   <div class="form-group col-md-6">
     <label for="inputPrice">Precio</label>
-    <input id="inputPrice" class="form-control" placeholder="40.00" [(ngModel)]="fragancia.Price">
+    <input id="inputPrice"
+           class="form-control"
+           placeholder="40.00"
+           (ngModelChange)="fragancia.Price = $event.toFixed(2)"
+           [(ngModel)]="fragancia.Price">
   </div>
   <div class="form-group col-md-6">
     <label for="inputCost">Costo</label>
@@ -33,8 +37,10 @@
   <thead class="table table-hover">
   <tr>
     <th scope="col">#</th>
-    <th scope="col">Nombre</th>
+    <th scope="col">Producto</th>
     <th scope="col">Cantidad</th>
+    <th scope="col">Precio</th>
+    <th scope="col">Total</th>
   </tr>
   </thead>
   <tbody>
@@ -44,11 +50,13 @@
     <th scope="row">
       <input type="number" [(ngModel)]="c.Quantity" (ngModelChange)="updateTotalQuantity();">
     </th>
+    <th scope="row">{{c.Cost | number:'1.2-2'}}</th>
+    <th scope="row">{{c.Cost * c.Quantity | number:'1.2-2'}}</th>
   </tr>
   <tr>
     <td></td>
     <td>Total:</td>
-    <td>{{this.totalQuantity}}</td>
+    <td>{{this.totalQuantity | number:'1.2-2'}}</td>
   </tr>
   </tbody>
 </table>
