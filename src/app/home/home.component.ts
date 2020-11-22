@@ -5,13 +5,13 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ExcelService } from '../excel.service';
-import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { merge, Observable} from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { map, startWith} from 'rxjs/operators';
-import { ExportService } from '../export.service';
-import { Commodity } from '../detail/detail.component';
+import {ExcelService} from '../excel.service';
+import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
+import {interval, merge, Observable} from 'rxjs';
+import {FormControl} from '@angular/forms';
+import {map, startWith} from 'rxjs/operators';
+import {ExportService} from '../export.service';
+import {Commodity} from '../detail/detail.component';
 
 export interface Fragancia {
   _id: any;
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('TABLE', { static: false }) tableToExport: ElementRef;
+  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
 
   // This is for printing
   // quantity represents how many (kg) of a fragancia will be generated
@@ -136,6 +136,11 @@ export class HomeComponent implements OnInit {
         this.cdr.detectChanges();
       });
     });
+
+    interval(1000)
+      .subscribe(
+        () => this.cdr.detectChanges()
+      );
   }
 
   open(content, size: string = 'xl') {
