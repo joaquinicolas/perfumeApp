@@ -26,7 +26,7 @@
            [(ngModel)]="fragancia.Cost">
   </div>
 </div>
-<div class="form-row" (keyup.f5)="save()">
+<div class="form-row" (keyup.f5)="save(confirmDialog)">
   <div class="form-group col-md-6">
     Buscar:
     <input class="form-control" type="text" [class.is-invalid]="searchFailed" [(ngModel)]="model"
@@ -75,7 +75,7 @@
   </tr>
   </tbody>
 </table>
-<button class="btn btn-primary" (click)="save()">Guardar</button>
+<button class="btn btn-primary" (click)="save(confirmDialog)">Guardar</button>
 
 
 <!--MODAL-->
@@ -104,6 +104,25 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="updateTotalQuantity()">Guardar</button>
-    <button type="button" class="btn btn-outline-dark" (click)="d('Cancel')">Cancelar</button>
+    <button type="button" class="btn btn-outline-dark" (click)="d('cancel')">Cancelar</button>
+  </div>
+</ng-template>
+
+
+<!--
+ CONFIRM DIALOG-->
+<ng-template #confirmDialog let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" >¿Estas seguro?</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Al aceptar guardara los cambios.
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('save')">Aceptar</button>
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel')">Cancelar</button>
   </div>
 </ng-template>

@@ -12,6 +12,7 @@ import {
 import {Commodity} from '../detail/detail.component';
 import {Fragancia} from '../home/home.component';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {Router} from "@angular/router";
 
 function search(text: string, values: Commodity[]) {
   if (text === '') {
@@ -47,6 +48,7 @@ export class FraganciaFormComponent implements OnInit {
     private excelService: ExcelService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
+    private router: Router
   ) {
   }
 
@@ -105,8 +107,18 @@ export class FraganciaFormComponent implements OnInit {
     );
   };
 
-  save() {
-    this.excelService.saveChanges(this.fragancia);
+  save(modal) {
+    this.modalService.open(
+      modal,
+      {
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'sm',
+      }
+    ).result
+      .then(res => this.excelService.saveChanges(
+        this.fragancia,
+        () => {this.router.navigate(['/'])})
+      );
   }
 
   updateTotalQuantity() {

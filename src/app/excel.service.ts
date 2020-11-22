@@ -66,13 +66,15 @@ export class ExcelService {
     ipcRenderer.send(AppEvents.ReadFragancias, {});
   }
 
-  saveChanges(fragancia: Fragancia) {
+  saveChanges(fragancia: Fragancia, cb: () => void) {
     ipcRenderer.send(AppEvents.SaveFragancias, fragancia);
+    ipcRenderer.on(AppEvents.SaveFragancias, cb);
   }
 
   readCommodities() {
     ipcRenderer.send(AppEvents.ReadCommodities, {});
   }
+
   downloadCommodities() {
     ipcRenderer.send('downloadCommodities');
   }
