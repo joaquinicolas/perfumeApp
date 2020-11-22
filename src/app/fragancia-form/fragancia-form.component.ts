@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { ExcelService } from '../excel.service';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {ExcelService} from '../excel.service';
 import {
   catchError,
   debounceTime,
@@ -9,8 +9,9 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { Commodity } from '../detail/detail.component';
-import { Fragancia } from '../home/home.component';
+import {Commodity} from '../detail/detail.component';
+import {Fragancia} from '../home/home.component';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 function search(text: string, values: Commodity[]) {
   if (text === '') {
@@ -35,16 +36,19 @@ export class FraganciaFormComponent implements OnInit {
   searchFailed = false;
   searching = false;
   fragancia: Fragancia;
-  commodity: Commodity;
   totalQuantity: number;
   private selectedComoditySubject = new BehaviorSubject<Commodity>(null);
   selectedCommodity$ = this.selectedComoditySubject.asObservable();
   model: any;
+  @ViewChild("searchbox") searchField: ElementRef;
+  @ViewChild('quantityField') quantityField: ElementRef;
 
   constructor(
     private excelService: ExcelService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal,
+  ) {
+  }
 
   ngOnInit(): void {
     this.excelService.readCommodities();
@@ -73,11 +77,13 @@ export class FraganciaFormComponent implements OnInit {
   }
 
   updateCost() {
-    this.fragancia.Cost = this.fragancia.Components.reduce(
+    const cost = this.fragancia.Components.reduce(
       (previousValue, currentValue): number =>
         currentValue.Cost * (currentValue.Quantity || 0) + previousValue,
       0
     );
+
+    this.fragancia.Cost = toFixedNumber(cost, 2, 10);
   }
 
   search = (text$: Observable<string>) => {
@@ -110,9 +116,13 @@ export class FraganciaFormComponent implements OnInit {
       0
     );
     this.updateCost();
+
+    // After saving, close the modal.
+    this.modalService.dismissAll('');
+    this.searchField.nativeElement.focus();
   }
 
-  add() {
+  add(modal: any) {
     this.selectedComoditySubject.next(
       this.commodities.filter((value) => {
         if (value.Description === this.model) {
@@ -120,5 +130,17 @@ export class FraganciaFormComponent implements OnInit {
         }
       })[0]
     );
+    this.model = "";
+    this.modalService.open(modal, {
+      ariaLabelledBy: 'modal-basic-title',
+      size: 'sm',
+    });
+    document.getElementById('quantityField')
+      .focus();
   }
+}
+
+function toFixedNumber(num, digits, base) {
+  var pow = Math.pow(base || 10, digits);
+  return Math.round(num * pow) / pow;
 }
