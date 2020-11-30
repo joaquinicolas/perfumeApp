@@ -59,15 +59,20 @@ export class FraganciaFormComponent implements OnInit {
       console.log(values);
       this.commodities = values;
     });
-    this.fragancia = history.state.data;
-    // this.fragancia = {
-    //   Cost: 0.0,
-    //   Price: 0.0,
-    //   Description: '',
-    //   Components: [],
-    //   totalQuantity: 0,
-    //   _id: null,
-    // };
+    if (history.state.data){
+      this.fragancia = history.state.data;
+    } else {
+      this.fragancia = {
+        Cost: 0.0,
+        Price: 0.0,
+        Description: '',
+        Components: [],
+        totalQuantity: 0,
+        _id: null,
+      };
+    }
+
+
     this.selectedCommodity$.subscribe({
       next: (value) => {
         if (!value) {
