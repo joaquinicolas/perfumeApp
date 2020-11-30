@@ -18,7 +18,7 @@ export class API {
 
   // private static fraganciasRepository: Repository<Fragancia>;
 
-  // Gets a list of all fragancias.
+  // Gets a list of sorted fragancias.
   public async getFragancias() {
     return new Promise((resolve, reject) => {
       this.store.db.fragancias.find({}, (err, docs) => {
@@ -105,8 +105,17 @@ export class API {
         };
       });
       if (fragancia._id == null) {
-        delete fragancia._id;
+        return reject('Cannot find element with id = null')
       }
+      // Price is being deleted because it's calculated at the runtime. We don't need to save this field.
+      if (fragancia.Price != null) {
+        delete fragancia.Price;
+      }
+      // same as price
+      if (fragancia.Cost != null) {
+        delete fragancia.Cost;
+      }
+      fragancia.Description = fragancia.Description.toUpperCase();
       this.store.db.fragancias.update(
         {_id: fragancia._id},
         fragancia,
@@ -137,9 +146,11 @@ export class API {
           if (fragancia._id == null) {
             delete fragancia._id;
           }
+          // Price is being deleted because it's calculated at the runtime. We don't need to save this field.
           if (fragancia.Price != null) {
             delete fragancia.Price;
           }
+          // same as price
           if (fragancia.Cost != null) {
             delete fragancia.Cost;
           }

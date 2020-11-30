@@ -88,8 +88,9 @@ export class ExcelService {
     ipcRenderer.on(AppEvents.UploadFile, cb);
   }
 
-  updateFragancia(f: Fragancia) {
+  updateFragancia(f: Fragancia, cb: () => void) {
     ipcRenderer.send(AppEvents.UpdateFragancia, f);
+    ipcRenderer.on(AppEvents.UpdateFragancia, cb);
   }
 }
 

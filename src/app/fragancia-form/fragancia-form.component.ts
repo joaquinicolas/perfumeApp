@@ -115,10 +115,7 @@ export class FraganciaFormComponent implements OnInit {
   };
 
   save(modal) {
-   if (this.fragancia._id != '') {
-     console.log('update');
-   }
-    this.modalService.open(
+   this.modalService.open(
       modal,
       {
         ariaLabelledBy: 'modal-basic-title',
@@ -159,6 +156,21 @@ export class FraganciaFormComponent implements OnInit {
     });
     document.getElementById('quantityField')
       .focus();
+  }
+
+  update(confirmDialog: any) {
+    this.modalService.open(
+      confirmDialog,
+      {
+        ariaLabelledBy:'modal-basic-title',
+        size:'sm',
+      }
+    )
+      .result
+      .then(res => this.excelService.updateFragancia(
+        this.fragancia,
+        () => {this.router.navigate(['/'])}
+      ));
   }
 }
 

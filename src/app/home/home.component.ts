@@ -166,7 +166,7 @@ export class HomeComponent implements OnInit {
           0
         );
         this.fragancia.Price = this.fragancia.Cost * 2;
-        this.excelService.updateFragancia(this.fragancia);
+        this.excelService.updateFragancia(this.fragancia, () => {});
         break;
       case Actions.PrintFragancia:
         window.print();
