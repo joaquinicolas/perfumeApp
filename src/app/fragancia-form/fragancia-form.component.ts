@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {ExcelService} from '../excel.service';
 import {
@@ -36,13 +36,14 @@ export class FraganciaFormComponent implements OnInit {
   commodities: Commodity[];
   searchFailed = false;
   searching = false;
-  fragancia: Fragancia;
   totalQuantity: number;
   private selectedComoditySubject = new BehaviorSubject<Commodity>(null);
   selectedCommodity$ = this.selectedComoditySubject.asObservable();
   model: any;
   @ViewChild("searchbox") searchField: ElementRef;
   @ViewChild('quantityField') quantityField: ElementRef;
+  @Input('fragancia')
+  fragancia: Fragancia
 
   constructor(
     private excelService: ExcelService,
@@ -58,14 +59,15 @@ export class FraganciaFormComponent implements OnInit {
       console.log(values);
       this.commodities = values;
     });
-    this.fragancia = {
-      Cost: 0.0,
-      Price: 0.0,
-      Description: '',
-      Components: [],
-      totalQuantity: 0,
-      _id: null,
-    };
+    this.fragancia = history.state.data;
+    // this.fragancia = {
+    //   Cost: 0.0,
+    //   Price: 0.0,
+    //   Description: '',
+    //   Components: [],
+    //   totalQuantity: 0,
+    //   _id: null,
+    // };
     this.selectedCommodity$.subscribe({
       next: (value) => {
         if (!value) {
@@ -108,6 +110,9 @@ export class FraganciaFormComponent implements OnInit {
   };
 
   save(modal) {
+   if (this.fragancia._id != '') {
+     console.log('update');
+   }
     this.modalService.open(
       modal,
       {

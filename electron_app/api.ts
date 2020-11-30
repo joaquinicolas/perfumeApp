@@ -107,12 +107,6 @@ export class API {
       if (fragancia._id == null) {
         delete fragancia._id;
       }
-      if (fragancia.Price != null) {
-        delete fragancia.Price;
-      }
-      if (fragancia.Cost != null) {
-        delete fragancia.Cost;
-      }
       this.store.db.fragancias.update(
         {_id: fragancia._id},
         fragancia,
@@ -128,7 +122,6 @@ export class API {
     });
   }
 
-  // TODO: use insert instead of upsert.
   public async saveFragancia(fragancia: Fragancia): Promise<any> {
     return new Promise((resolve, reject) => {
       const regex = new RegExp(`${fragancia.Description}`, 'gi');

@@ -12,6 +12,7 @@ import {FormControl} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
 import {ExportService} from '../export.service';
 import {Commodity} from '../detail/detail.component';
+import {Router} from "@angular/router";
 
 export interface Fragancia {
   _id: any;
@@ -70,7 +71,8 @@ export class HomeComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private exportService: ExportService,
-    config: NgbModalConfig
+    config: NgbModalConfig,
+    private router: Router
   ) {
     config.backdrop = 'static';
     config.keyboard = false;
@@ -204,5 +206,9 @@ export class HomeComponent implements OnInit {
       this.fragancia.Description
     );
     this.action = -1;
+  }
+
+  goToEdit(f: Fragancia):void {
+    this.router.navigate(['/new_fragancia'], {state: {data:f}})
   }
 }
