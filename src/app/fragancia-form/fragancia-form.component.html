@@ -26,7 +26,7 @@
            [(ngModel)]="fragancia.Cost">
   </div>
 </div>
-<div class="form-row" (keyup.f5)="save(confirmDialog)">
+<div class="form-row" (keyup.f5)="save(confirmDialog)" (keyup.f6)="update(confirmDialog)">
   <div class="form-group col-md-6">
     Buscar:
     <input class="form-control" type="text" [class.is-invalid]="searchFailed" [(ngModel)]="model"
@@ -43,7 +43,10 @@
 </div>
 
 <div class="alert alert-info" role="alert">
-  Al presionar F5 se guardaran los cambios.
+  Al presionar F5 se creara una nueva fragancia.
+</div>
+<div class="alert alert-info" role="alert">
+  Al presionar F6 se actualizaran los datos.
 </div>
 
 <table class="table table-hover">
@@ -119,11 +122,11 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" (keyup.enter)="modal.close('save')">
     Al aceptar guardara los cambios.
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('save')">Aceptar</button>
+    <button type="button" ngbAutofocus class="btn btn-outline-dark" (click)="modal.close('save')">Aceptar</button>
     <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel')">Cancelar</button>
   </div>
 </ng-template>
