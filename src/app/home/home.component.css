@@ -4,6 +4,9 @@
     outline: none;
     border: none;
   }
+  .print{
+    width: 500px;
+  }
 }
 
 @media screen {
