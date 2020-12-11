@@ -12,7 +12,7 @@ import {FormControl} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
 import {ExportService} from '../export.service';
 import {Commodity} from '../detail/detail.component';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 export interface Fragancia {
   _id: any;
@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
   // quantity represents how many (kg) of a fragancia will be generated
   quantity = 1.0;
   // name represents the employe's name
-  name: string = '';
+  name = '';
   // If it's true secondary names will be printed else fragancia.Description is going to be printed.
   isSecondaryChecked = false;
   // End printing region
@@ -99,7 +99,7 @@ export class HomeComponent implements OnInit {
       // Save ids for avoiding repeat requests.
       const keys = {};
       for (let i = 0; i < fragancias.length; i++) {
-        let element = fragancias[i];
+        const element = fragancias[i];
         element.Components.forEach((val) => {
           if (!keys[val._id]) {
             this.excelService.ComponentById(val._id);
@@ -116,7 +116,7 @@ export class HomeComponent implements OnInit {
         return values.map((v) => {
           let cost = 0.0;
           for (let i = 0; i < v.Components.length; i++) {
-            let element = v.Components[i];
+            const element = v.Components[i];
             if (element._id == commodity._id) {
               v.Components[i] = Object.assign({}, element, commodity);
             }
@@ -166,7 +166,8 @@ export class HomeComponent implements OnInit {
           0
         );
         this.fragancia.Price = this.fragancia.Cost * 2;
-        this.excelService.updateFragancia(this.fragancia, () => {});
+        this.excelService.updateFragancia(this.fragancia, () => {
+        });
         break;
       case Actions.PrintFragancia:
         window.print();
@@ -199,6 +200,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  getTotalQuantity() {
+    this.totalQuantity = this.fragancia.Components
+      .reduce((prevValue, currValue) => prevValue + currValue.Quantity, 0);
+
+    return this.totalQuantity;
+  }
+
   exportTOExcel() {
     this.action = Actions.ExportFragancia;
     this.exportService.exportExcel(
@@ -208,7 +216,7 @@ export class HomeComponent implements OnInit {
     this.action = -1;
   }
 
-  goToEdit(f: Fragancia):void {
-    this.router.navigate(['/new_fragancia'], {state: {data:f}})
+  goToEdit(f: Fragancia): void {
+    this.router.navigate(['/new_fragancia'], {state: {data: f}});
   }
 }
