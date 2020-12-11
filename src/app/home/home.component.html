@@ -93,7 +93,7 @@
           <b>Cantidad Total:</b>
         </td>
         <td>
-          {{this.totalQuantity}}
+          {{this.totalQuantity | number : '1.3-3'}}
         </td>
         <td></td>
       </tr>
@@ -160,12 +160,12 @@
           {{c.SecondaryName}}
         </td>
         <td>
-          {{c.Quantity * quantity}}
+          {{(c.Quantity * quantity) | number : '1.3-3'}}
         </td>
       </tr>
       <tr>
         <td><b>Cantidad total:</b></td>
-        <td>{{getTotalQuantity()}}</td>
+        <td>{{getTotalQuantity() | number : '1.3-3'}}</td>
       </tr>
       </tbody>
     </table>
