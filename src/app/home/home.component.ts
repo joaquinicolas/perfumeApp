@@ -120,6 +120,7 @@ export class HomeComponent implements OnInit {
             if (element._id == commodity._id) {
               v.Components[i] = Object.assign({}, element, commodity);
             }
+            v.Components[i].Quantity = toFixedNumber(v.Components[i].Quantity, 3, 10);
             cost += v.Components[i].Cost * v.Components[i].Quantity;
           }
           v.Cost = cost;
@@ -219,4 +220,9 @@ export class HomeComponent implements OnInit {
   goToEdit(f: Fragancia): void {
     this.router.navigate(['/new_fragancia'], {state: {data: f}});
   }
+}
+
+function toFixedNumber(num, digits, base) {
+  const pow = Math.pow(base || 10, digits);
+  return Math.round(num * pow) / pow;
 }
