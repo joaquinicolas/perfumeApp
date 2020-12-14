@@ -11,8 +11,8 @@ import {
 } from 'rxjs/operators';
 import {Commodity} from '../detail/detail.component';
 import {Fragancia} from '../home/home.component';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {Router} from "@angular/router";
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Router} from '@angular/router';
 
 function search(text: string, values: Commodity[]) {
   if (text === '') {
@@ -40,10 +40,10 @@ export class FraganciaFormComponent implements OnInit {
   private selectedComoditySubject = new BehaviorSubject<Commodity>(null);
   selectedCommodity$ = this.selectedComoditySubject.asObservable();
   model: any;
-  @ViewChild("searchbox") searchField: ElementRef;
+  @ViewChild('searchbox') searchField: ElementRef;
   @ViewChild('quantityField') quantityField: ElementRef;
   @Input('fragancia')
-  fragancia: Fragancia
+  fragancia: Fragancia;
 
   constructor(
     private excelService: ExcelService,
@@ -59,7 +59,7 @@ export class FraganciaFormComponent implements OnInit {
       console.log(values);
       this.commodities = values;
     });
-    if (history.state.data){
+    if (history.state.data) {
       this.fragancia = history.state.data;
     } else {
       this.fragancia = {
@@ -112,10 +112,10 @@ export class FraganciaFormComponent implements OnInit {
       ),
       tap(() => (this.searching = false))
     );
-  };
+  }
 
   save(modal) {
-   this.modalService.open(
+    this.modalService.open(
       modal,
       {
         ariaLabelledBy: 'modal-basic-title',
@@ -124,7 +124,9 @@ export class FraganciaFormComponent implements OnInit {
     ).result
       .then(res => this.excelService.saveChanges(
         this.fragancia,
-        () => {this.router.navigate(['/'])})
+        () => {
+          this.router.navigate(['/']);
+        })
       );
   }
 
@@ -149,7 +151,7 @@ export class FraganciaFormComponent implements OnInit {
         }
       })[0]
     );
-    this.model = "";
+    this.model = '';
     this.modalService.open(modal, {
       ariaLabelledBy: 'modal-basic-title',
       size: 'sm',
@@ -162,19 +164,26 @@ export class FraganciaFormComponent implements OnInit {
     this.modalService.open(
       confirmDialog,
       {
-        ariaLabelledBy:'modal-basic-title',
-        size:'sm',
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'sm',
       }
     )
       .result
       .then(res => this.excelService.updateFragancia(
         this.fragancia,
-        () => {this.router.navigate(['/'])}
+        () => {
+          this.router.navigate(['/']);
+        }
       ));
+  }
+
+  // Remove a component at i
+  delete(i: number) {
+   this.fragancia.Components.splice(i, 1);
   }
 }
 
 function toFixedNumber(num, digits, base) {
-  var pow = Math.pow(base || 10, digits);
+  let pow = Math.pow(base || 10, digits);
   return Math.round(num * pow) / pow;
 }

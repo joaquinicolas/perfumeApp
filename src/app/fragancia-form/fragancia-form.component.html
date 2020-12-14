@@ -70,6 +70,10 @@
     </th>
     <th scope="row">{{c.Cost | number:'1.2-2'}}</th>
     <th scope="row">{{c.Cost * c.Quantity | number:'1.2-2'}}</th>
+    <th scope="row">
+      <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
+            (click)="delete(i)">delete</span>
+    </th>
   </tr>
   <tr>
     <td></td>
