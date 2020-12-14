@@ -61,7 +61,7 @@ export class AuthService {
 
 // checkLs checks if local storage is available
 function checkLs() {
-  let test = 'test';
+  const test = 'test';
   try {
     localStorage.setItem(test, test);
     localStorage.removeItem(test);

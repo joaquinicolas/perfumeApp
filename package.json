@@ -17,6 +17,7 @@
   "build": {
     "appId": "com.joaquinno.fragancias",
     "win": {
+      "icon": "src/assets/isens.ico",
       "target": "nsis"
     },
     "directories": {
