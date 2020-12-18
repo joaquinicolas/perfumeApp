@@ -1,23 +1,48 @@
 <!--Section: Block Content-->
 <section class="wrapper">
-
   <p>Nueva contraseña</p>
   <form>
     <div class="form-group">
+      <label>Contraseña anterior</label>
+      <input
+        [(ngModel)]="passwordBefore"
+        name="passwordBefore"
+        id="passwordBefore"
+        class="form-control"
+        placeholder="contraseña anterior"
+        type="password"
+      />
+    </div>
+    <div class="form-group">
       <label>Contraseña</label>
-      <input [(ngModel)]="password" type="password" id="password" class="form-control" name="login"
-             placeholder="password">
+      <input
+        [(ngModel)]="password"
+        type="password"
+        id="password"
+        class="form-control"
+        name="login"
+        placeholder="password"
+      />
     </div>
 
     <div class="form-group">
       <label>Confirmar contraseña</label>
-      <input [(ngModel)]="confirmPassword" type="password" id="password1" class="form-control" name="login"
-             placeholder="password">
+      <input
+        [(ngModel)]="confirmPassword"
+        type="password"
+        id="password1"
+        class="form-control"
+        name="login"
+        placeholder="password"
+      />
     </div>
     {{msg}}
-    <input type="submit" class="btn btn-primary" (click)="updatePassword()" value="Guardar">
+    <input
+      type="submit"
+      class="btn btn-primary"
+      (click)="updatePassword()"
+      value="Guardar"
+    />
   </form>
-
-
 </section>
 <!--Section: Block Content-->

@@ -48,11 +48,19 @@ export class AuthService {
     }
     this.isLoggedInSubject.next(false);
   }
-
-  updatePassword(password: string) {
+  // UpdatePassword updates password only if:
+  // local storage is available and
+  // the last given password = last stored password.
+  updatePassword(password: string, lastPassword: string) {
     if (checkLs()) {
-      localStorage.setItem(this.StorageName, password);
-      this.isUpdatedSubject.next(true);
+      const lastStoredPasswd = localStorage.getItem(this.StorageName);
+      if (lastPassword === lastStoredPasswd) {
+        localStorage.setItem(this.StorageName, password);
+        this.isUpdatedSubject.next(true);
+      } else {
+        this.isUpdatedSubject.next(false);
+        this.reasonSubject.next('Previuos password is not right');
+      }
     } else {
       this.reasonSubject.next('Local storage is not available');
     }
