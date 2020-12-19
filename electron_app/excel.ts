@@ -1,14 +1,15 @@
-import {Commodity} from './entity/Commodity';
+import { Fragancia } from './entity/Fragancia';
+import { Commodity } from './entity/Commodity';
 import * as Excel from 'exceljs';
-import {CommoditiesFileName} from "./constant";
-import * as path from "path";
-import {Workbook, Worksheet} from "exceljs";
+import { CommoditiesFileName, FraganciasFileName } from './constant';
+import * as path from 'path';
+import { Workbook, Worksheet } from 'exceljs';
 
 const CREATOR = 'Fragancias';
 
 export interface Column {
-  header: string
-  key: string
+  header: string;
+  key: string;
 }
 
 export class Spreadsheet {
@@ -21,11 +22,17 @@ export class Spreadsheet {
         sheet.eachRow((row, number) => {
           if (row.hasValues && number > 1) {
             const commodity = new Commodity();
-            commodity._id = row.getCell("A").toString();
+            commodity._id = row.getCell('A').toString();
             commodity.Description = row.values[2];
-            const cost = +row.getCell("C").result ? +row.getCell("C").result.toString() : +row.getCell('C').value;
+            const cost = +row.getCell('C').result
+              ? +row.getCell('C').result.toString()
+              : +row.getCell('C').value;
             commodity.Cost = cost;
-            commodity.SecondaryName = row.getCell("D").toString().toUpperCase().trim();
+            commodity.SecondaryName = row
+              .getCell('D')
+              .toString()
+              .toUpperCase()
+              .trim();
             result.push(commodity);
           }
         });
@@ -34,28 +41,65 @@ export class Spreadsheet {
     });
   }
 
-  public async newCommoditiesWorkbook(commodities: Commodity[], dbPath: string) {
+  public async newFraganciasWorkbook(dbPath: string, fragancias: Fragancia[]) {
+    const sheetName = 'SHEET_1';
+    const workbook = this.newWorkbook();
+    this.addWorksheet([sheetName], [workbook]);
+    const sheet = workbook.getWorksheet(sheetName);
+    this.addColumns(
+      [
+        { header: 'ID', key: 'id' },
+        { header: 'Nombre', key: 'description' },
+        { header: 'Costo', key: 'cost' },
+      ],
+      [sheet]
+    );
+
+    for (let i = 0; i < fragancias.length; i++) {
+      const element = fragancias[i];
+      sheet.addRow(
+        {
+          id: element._id,
+          description: element.Description,
+          cost: element.Cost,
+        },
+        'i'
+      );
+    }
+
+    await workbook.xlsx.writeFile(path.resolve(dbPath, FraganciasFileName));
+  }
+  public async newCommoditiesWorkbook(
+    commodities: Commodity[],
+    dbPath: string
+  ) {
     const sheetName = 'SHEET_1';
     let workbook = this.newWorkbook();
     this.addWorksheet([sheetName], [workbook]);
     let sheet = workbook.getWorksheet(sheetName);
-    this.addColumns([
-      {header: 'ID', key: 'id'},
-      {header: 'Descripcion', key: 'description'},
-      {header: 'Costo', key: 'cost'},
-      {header: 'Nombre secundario', key: 'secondaryName'},
-    ], [sheet]);
+    this.addColumns(
+      [
+        { header: 'ID', key: 'id' },
+        { header: 'Descripcion', key: 'description' },
+        { header: 'Costo', key: 'cost' },
+        { header: 'Nombre secundario', key: 'secondaryName' },
+      ],
+      [sheet]
+    );
 
     for (let i = 0; i < commodities.length; i++) {
       const element = commodities[i];
-      sheet.addRow({
-        id: element._id,
-        description: element.Description,
-        cost: element.Cost,
-        secondaryName: element.SecondaryName
-      }, 'i');
+      sheet.addRow(
+        {
+          id: element._id,
+          description: element.Description,
+          cost: element.Cost,
+          secondaryName: element.SecondaryName,
+        },
+        'i'
+      );
     }
-    await workbook.xlsx.writeFile(path.resolve(dbPath, CommoditiesFileName))
+    await workbook.xlsx.writeFile(path.resolve(dbPath, CommoditiesFileName));
   }
 
   private addWorksheet(sheets: string[], workBook: Workbook[]) {
@@ -70,7 +114,6 @@ export class Spreadsheet {
     worksheet[0].columns = columns;
     return worksheet;
   }
-
 
   // Return a workbook stream writer
   private newWorkbook(): Excel.Workbook {

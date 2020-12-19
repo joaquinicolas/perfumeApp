@@ -1,127 +1,202 @@
-<div class="d-flex justify-content-center doNotPrint align-items-center" style="height: 70px;">
+<div
+  class="d-flex justify-content-center doNotPrint align-items-center"
+  style="height: 70px"
+>
   <form>
     <div class="form-group form-inline">
-      Buscar: <input class="form-control ml-2" type="text" [formControl]="filter"/>
+      Buscar:
+      <input class="form-control ml-2" type="text" [formControl]="filter" />
     </div>
   </form>
   <div class="d-flex flex-grow-1 justify-content-end">
-    <button type="button" class="btn btn-outline-dark" [routerLink]="'/new_fragancia'">Nuevo</button>
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      [routerLink]="'/new_fragancia'"
+    >
+      Nuevo
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="exportFragancias()"
+    >
+      Exportar
+    </button>
   </div>
 </div>
 <div class="container-fluid doNotPrint" style="margin-top: 20px">
   <table class="table table-hover">
     <thead class="thead-dark">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Porcentaje</th>
-      <th scope="col">Costo</th>
-      <th scope="col">Venta</th>
-      <th></th>
-      <th></th>
-    </tr>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Costo</th>
+        <th scope="col">Venta</th>
+        <th></th>
+        <th></th>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of perfumes$ | async; index as i" (click)="toggleFraganciaPopup($event ,p, 0)">
-      <th scope="row">{{i + 1}}</th>
-      <td>
-        <ngb-highlight [result]="p.Description" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.totalQuantity * 100 | number: '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.Cost | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="p.Price | number : '1.2-2'" [term]="filter.value"></ngb-highlight>
-      </td>
-      <td>
-          <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
-                (click)="toggleFraganciaPopup($event,p, 1)">print</span>
-      </td>
-      <td>
-          <span style="font-size: 25px;color: grey; cursor: pointer;" class="material-icons"
-                (click)="goToEdit(p)">edit</span>
-      </td>
-    </tr>
+      <tr
+        *ngFor="let p of perfumes$ | async; index as i"
+        (click)="toggleFraganciaPopup($event ,p, 0)"
+      >
+        <th scope="row">{{i + 1}}</th>
+        <td>
+          <ngb-highlight
+            [result]="p.Description"
+            [term]="filter.value"
+          ></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight
+            [result]="p.totalQuantity * 100 | number: '1.2-2'"
+            [term]="filter.value"
+          ></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight
+            [result]="p.Cost | number : '1.2-2'"
+            [term]="filter.value"
+          ></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight
+            [result]="p.Price | number : '1.2-2'"
+            [term]="filter.value"
+          ></ngb-highlight>
+        </td>
+        <td>
+          <span
+            style="font-size: 25px; color: grey; cursor: pointer"
+            class="material-icons"
+            (click)="toggleFraganciaPopup($event,p, 1)"
+            >print</span
+          >
+        </td>
+        <td>
+          <span
+            style="font-size: 25px; color: grey; cursor: pointer"
+            class="material-icons"
+            (click)="goToEdit(p)"
+            >edit</span
+          >
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
 
-<button style="visibility: hidden" id="trigger" #trigger class="btn btn-lg btn-outline-primary doNotPrint"
-        (click)="open(content)">
+<button
+  style="visibility: hidden"
+  id="trigger"
+  #trigger
+  class="btn btn-lg btn-outline-primary doNotPrint"
+  (click)="open(content)"
+>
   Launch demo modal
 </button>
 
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">{{fragancia.Description}}</h4>
-    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+    <h4 class="modal-title" id="modal-basic-title">
+      {{fragancia.Description}}
+    </h4>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="d('Cross click')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <table class="table table-borderless">
       <thead>
-      <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Precio</th>
-        <th scope="col">Cantidad</th>
-        <th scope="col">Total</th>
-      </tr>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Total</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let c of fragancia.Components">
-        <td>
-          {{c.Description}}
-        </td>
-        <td>
-          {{c.Cost | number : '1.2-2'}}
-        </td>
-        <td>
-          <input type="number" [ngModel]="c.Quantity | number : '1.3-3'" (ngModelChange)="c.Quantity=$event;updateTotalQuantity();" data-decimals="3"
-                 min="0" step="0.1"/>
-        </td>
-        <td>
-          {{c.Quantity * c.Cost | number : '1.2-2' }}
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          <b>Cantidad Total:</b>
-        </td>
-        <td>
-          {{this.totalQuantity | number : '1.3-3'}}
-        </td>
-        <td></td>
-      </tr>
+        <tr *ngFor="let c of fragancia.Components">
+          <td>{{c.Description}}</td>
+          <td>{{c.Cost | number : '1.2-2'}}</td>
+          <td>
+            <input
+              type="number"
+              [ngModel]="c.Quantity | number : '1.3-3'"
+              (ngModelChange)="c.Quantity=$event;updateTotalQuantity();"
+              data-decimals="3"
+              min="0"
+              step="0.1"
+            />
+          </td>
+          <td>{{c.Quantity * c.Cost | number : '1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <b>Cantidad Total:</b>
+          </td>
+          <td>{{this.totalQuantity | number : '1.3-3'}}</td>
+          <td></td>
+        </tr>
       </tbody>
     </table>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="close(content)">Guardar</button>
-    <button type="button" class="btn btn-outline-dark" (click)="exportTOExcel()">Exportar</button>
+    <button type="button" class="btn btn-outline-dark" (click)="close(content)">
+      Guardar
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="exportTOExcel()"
+    >
+      Exportar
+    </button>
   </div>
 </ng-template>
 
-<button style="visibility: hidden" id="print_btn" #print_btn class="btn btn-lg btn-outline-primary doNotPrint"
-        (click)="open(print)">
+<button
+  style="visibility: hidden"
+  id="print_btn"
+  #print_btn
+  class="btn btn-lg btn-outline-primary doNotPrint"
+  (click)="open(print)"
+>
   Launch demo modal
 </button>
 
 <ng-template #print let-c="close" let-d="dismiss">
   <div class="modal-header print">
     <h4 class="modal-title">{{fragancia.Description}}</h4>
-    <button type="button" class="close doNotPrint" aria-label="Close" (click)="d('Cross click')">
+    <button
+      type="button"
+      class="close doNotPrint"
+      aria-label="Close"
+      (click)="d('Cross click')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body print">
     <div class="d-sm-flex flex-row">
       <div class="input-group mb-3 doNotPrint">
-        <input type="number" class="no-border" [(ngModel)]="quantity" data-decimals="2" min="0" step="0.1"/>
+        <input
+          type="number"
+          class="no-border"
+          [(ngModel)]="quantity"
+          data-decimals="2"
+          min="0"
+          step="0.1"
+        />
         <div class="input-group-append">
           <span class="input-group-text">.00 KGs</span>
         </div>
@@ -130,7 +205,7 @@
       <div class="input-group mb-3 doNotPrint">
         <div class="input-group-prepend">
           <div class="input-group-text">
-            <input [(ngModel)]="isSecondaryChecked" type="checkbox">
+            <input [(ngModel)]="isSecondaryChecked" type="checkbox" />
           </div>
         </div>
         <label class="input-group-text">¿Nombres secundarios?</label>
@@ -140,39 +215,43 @@
         <div class="input-group-prepend doNotPrint">
           <span class="input-group-text">Nombre del empleado: </span>
         </div>
-        <input type="text" [(ngModel)]="name" aria-label="First name" class="form-control">
+        <input
+          type="text"
+          [(ngModel)]="name"
+          aria-label="First name"
+          class="form-control"
+        />
       </div>
-
     </div>
     <table class="table table-borderless">
       <thead>
-      <tr>
-        <th class="doNotPrint" scope="col">Nombre</th>
-        <th scope="col">Cantidad</th>
-      </tr>
+        <tr>
+          <th class="doNotPrint" scope="col">Nombre</th>
+          <th scope="col">Cantidad</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let c of fragancia.Components">
-        <td [hidden]="isSecondaryChecked">
-          {{c.Description}}
-        </td>
-        <td [hidden]="!isSecondaryChecked">
-          {{c.SecondaryName}}
-        </td>
-        <td>
-          {{(c.Quantity * quantity) | number : '1.3-3'}}
-        </td>
-      </tr>
-      <tr>
-        <td><b>Cantidad total:</b></td>
-        <td>{{getTotalQuantity() | number : '1.3-3'}}</td>
-      </tr>
+        <tr *ngFor="let c of fragancia.Components">
+          <td [hidden]="isSecondaryChecked">{{c.Description}}</td>
+          <td [hidden]="!isSecondaryChecked">{{c.SecondaryName}}</td>
+          <td>{{(c.Quantity * quantity) | number : '1.3-3'}}</td>
+        </tr>
+        <tr>
+          <td><b>Cantidad total:</b></td>
+          <td>{{(getTotalQuantity() * quantity) | number : '1.3-3'}}</td>
+        </tr>
       </tbody>
     </table>
     <span>{{todayDateTime | date: 'short':'+GMT-3'}}</span>
   </div>
   <div class="modal-footer print">
-    <button type="button" class="btn btn-outline-dark doNotPrint" (click)="close(print)">Imprimir</button>
+    <button
+      type="button"
+      class="btn btn-outline-dark doNotPrint"
+      (click)="close(print)"
+    >
+      Imprimir
+    </button>
   </div>
 </ng-template>
 

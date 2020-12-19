@@ -79,6 +79,10 @@ export class ExcelService {
     ipcRenderer.send('downloadCommodities');
   }
 
+exportFragancias(){
+    ipcRenderer.send(AppEvents.ExportFragancias);
+}
+
   updateCommodity(commodity: Commodity) {
     ipcRenderer.send(AppEvents.UpdateCommodity, commodity);
   }
@@ -102,5 +106,6 @@ export enum AppEvents {
   CommodityById = 'commodityById',
   UploadFile = 'uploadFile',
   UpdateFragancia = 'updateFragancia',
-  UpdateCommodity = 'updateCommodity'
+  UpdateCommodity = 'updateCommodity',
+  ExportFragancias = 'exportFragancias'
 }

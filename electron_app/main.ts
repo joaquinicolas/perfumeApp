@@ -1,16 +1,16 @@
 import 'reflect-metadata';
-import {app, BrowserWindow, ipcMain, dialog} from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as url from 'url';
 import * as path from 'path';
-import {API} from './api';
+import { API } from './api';
 import * as fs from 'fs';
 import * as Datastore from 'nedb';
-import {Spreadsheet} from './excel';
-import {AppEvents, FileStatus} from "./constant";
+import { Spreadsheet } from './excel';
+import { AppEvents, FileStatus } from './constant';
 
 enum FileStatusMessages {
   Ok = 'Materias primas almacenadas exitosamente',
-  Error = 'Material primas no pudieron ser almacenadas'
+  Error = 'Material primas no pudieron ser almacenadas',
 }
 
 const fraganciasFolder = 'fragancias';
@@ -52,11 +52,10 @@ app.on('activate', () => {
   }
 });
 
-
 ipcMain.on(AppEvents.UploadFile, async (event: any) => {
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile'],
-    filters: [{name: 'Custom File Type', extensions: ['xlsx', 'xls']}],
+    filters: [{ name: 'Custom File Type', extensions: ['xlsx', 'xls'] }],
   });
 
   if (res.canceled) {
@@ -66,7 +65,9 @@ ipcMain.on(AppEvents.UploadFile, async (event: any) => {
       const store = new Store();
       const api = new API(store);
       const spreadsheetAPI = new Spreadsheet();
-      const commodities = await spreadsheetAPI.readCommoditiesFile(res.filePaths[0]);
+      const commodities = await spreadsheetAPI.readCommoditiesFile(
+        res.filePaths[0]
+      );
       for (let i = 0; i < commodities.length; i++) {
         const element = commodities[i];
         await api.saveCommodity(element);
@@ -82,17 +83,27 @@ ipcMain.on(AppEvents.ReadFragancias, async () => {
   const store = new Store();
   const api = new API(store);
   try {
-    let fragancias = await api.getFragancias();
+    const fragancias = await api.getFragancias();
     win.webContents.send(AppEvents.ReadFragancias, fragancias);
   } catch (error) {
     showErrorDialog(error);
+  }
+});
+ipcMain.on(AppEvents.ExportFragancias, async (e, args) => {
+  try {
+    const spreadsheet = new Spreadsheet();
+    await spreadsheet.newFraganciasWorkbook(dbPath, args);
+    win.webContents.send(AppEvents.ExportFragancias);
+    showMessageBox('Archivo almacenado exitosamente');
+  } catch (e) {
+    showErrorDialog(e);
   }
 });
 ipcMain.on(AppEvents.DownloadCommodities, async (event, args) => {
   const store = new Store();
   const api = new API(store);
   try {
-    let commodities = await api.getCommodities();
+    const commodities = await api.getCommodities();
     const spreadsheet = new Spreadsheet();
     await spreadsheet.newCommoditiesWorkbook(commodities, dbPath);
     win.webContents.send(AppEvents.DownloadCommodities);
@@ -190,7 +201,9 @@ function showErrorDialog(msg: string) {
   return dialog.showErrorBox(title, msg.toString());
 }
 
-function showMessageBox(message: string): Promise<Electron.MessageBoxReturnValue> {
+function showMessageBox(
+  message: string
+): Promise<Electron.MessageBoxReturnValue> {
   const title = 'Accion exitosa';
   const type = 'info';
   const buttons = ['Entiendo'];

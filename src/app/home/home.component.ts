@@ -5,14 +5,14 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {ExcelService} from '../excel.service';
-import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {interval, merge, Observable} from 'rxjs';
-import {FormControl} from '@angular/forms';
-import {map, startWith} from 'rxjs/operators';
-import {ExportService} from '../export.service';
-import {Commodity} from '../detail/detail.component';
-import {Router} from '@angular/router';
+import { ExcelService } from '../excel.service';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { interval, merge, Observable } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
+import { ExportService } from '../export.service';
+import { Commodity } from '../detail/detail.component';
+import { Router } from '@angular/router';
 
 export interface Fragancia {
   _id: any;
@@ -47,6 +47,7 @@ function search(text: string, f: Fragancia[]): Fragancia[] {
 export class HomeComponent implements OnInit {
   fakeName: string;
   fragancia: Fragancia;
+  fragancias: Fragancia[];
   action: Actions;
   perfumes$: Observable<Fragancia[]>;
   filter = new FormControl('');
@@ -54,7 +55,7 @@ export class HomeComponent implements OnInit {
   // trigger opens up modal
   @ViewChild('trigger') trigger: ElementRef;
   @ViewChild('print_btn') printBtn: ElementRef;
-  @ViewChild('TABLE', {static: false}) tableToExport: ElementRef;
+  @ViewChild('TABLE', { static: false }) tableToExport: ElementRef;
 
   // This is for printing
   // quantity represents how many (kg) of a fragancia will be generated
@@ -82,6 +83,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.excelService.readData();
     this.excelService.gotFragancias.subscribe((values) => {
+      this.fragancias = values;
       const fragancias = values.map((v) => ({
         _id: v._id,
         Description: v.Description,
@@ -120,7 +122,11 @@ export class HomeComponent implements OnInit {
             if (element._id == commodity._id) {
               v.Components[i] = Object.assign({}, element, commodity);
             }
-            v.Components[i].Quantity = toFixedNumber(v.Components[i].Quantity, 3, 10);
+            v.Components[i].Quantity = toFixedNumber(
+              v.Components[i].Quantity,
+              3,
+              10
+            );
             cost += v.Components[i].Cost * v.Components[i].Quantity;
           }
           v.Cost = cost;
@@ -140,10 +146,7 @@ export class HomeComponent implements OnInit {
       });
     });
 
-    interval(1000)
-      .subscribe(
-        () => this.cdr.detectChanges()
-      );
+    interval(1000).subscribe(() => this.cdr.detectChanges());
   }
 
   open(content, size: string = 'xl') {
@@ -167,8 +170,7 @@ export class HomeComponent implements OnInit {
           0
         );
         this.fragancia.Price = this.fragancia.Cost * 2;
-        this.excelService.updateFragancia(this.fragancia, () => {
-        });
+        this.excelService.updateFragancia(this.fragancia, () => {});
         break;
       case Actions.PrintFragancia:
         window.print();
@@ -202,8 +204,10 @@ export class HomeComponent implements OnInit {
   }
 
   getTotalQuantity() {
-    this.totalQuantity = this.fragancia.Components
-      .reduce((prevValue, currValue) => prevValue + currValue.Quantity, 0);
+    this.totalQuantity = this.fragancia.Components.reduce(
+      (prevValue, currValue) => prevValue + currValue.Quantity,
+      0
+    );
 
     return this.totalQuantity;
   }
@@ -216,9 +220,15 @@ export class HomeComponent implements OnInit {
     );
     this.action = -1;
   }
+  exportFragancias() {
+    this.exportService.exportFragancias(
+      this.fragancias,
+      () => {}
+    );
+  }
 
   goToEdit(f: Fragancia): void {
-    this.router.navigate(['/new_fragancia'], {state: {data: f}});
+    this.router.navigate(['/new_fragancia'], { state: { data: f } });
   }
 }
 

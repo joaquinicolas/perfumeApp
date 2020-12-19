@@ -7,7 +7,8 @@ export enum AppEvents {
   UploadFile = 'uploadFile',
   UpdateFragancia = 'updateFragancia',
   UpdateCommodity = 'updateCommodity',
-  DownloadCommodities = 'downloadCommodities'
+  DownloadCommodities = 'downloadCommodities',
+  ExportFragancias = 'exportFragancias'
 }
 
 export enum FileStatus {
@@ -16,3 +17,4 @@ export enum FileStatus {
 }
 
 export const CommoditiesFileName = 'primas.xlsx';
+export const FraganciasFileName = 'fragancias.xlsx';
