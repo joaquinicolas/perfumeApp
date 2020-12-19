@@ -54,7 +54,7 @@ export class AuthService {
   updatePassword(password: string, lastPassword: string) {
     if (checkLs()) {
       const lastStoredPasswd = localStorage.getItem(this.StorageName);
-      if (lastPassword === lastStoredPasswd) {
+      if (lastPassword === lastStoredPasswd || !lastStoredPasswd) {
         localStorage.setItem(this.StorageName, password);
         this.isUpdatedSubject.next(true);
       } else {
