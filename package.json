@@ -41,7 +41,7 @@
     "exceljs": "^4.1.0",
     "nedb": "^1.8.0",
     "ngx-electron": "^2.2.0",
-    "read-excel-file": "^4.0.6",
+    "read-excel-file": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
